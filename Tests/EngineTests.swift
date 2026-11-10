@@ -93,7 +93,7 @@ struct StretchSessionTests {
         let one = Course(id: "t", title: Phrase("t", "t"), note: Phrase("", ""), sky: .noon, moves: [.tiltRight, .tiltLeft], isPro: false)
         let s = drive(one, until: 60) { _ in .zero }
         #expect(s.isFinished)
-        #expect(s.results.allSatisfy(\.timedOut))
+        #expect(s.results.allSatisfy { $0.timedOut })
         #expect(s.score <= 30)
     }
 
