@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# scripts/new-app.sh が core.hooksPath=.githooks を設定する。
+exec bash "$(git rev-parse --show-toplevel)/scripts/preflight-push.sh" "$@"

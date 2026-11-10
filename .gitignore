@@ -1,0 +1,20 @@
+# XcodeGen が作るもの
+*.xcodeproj/
+App/Info.plist
+
+# Xcode
+DerivedData/
+build/
+*.xcresult
+xcuserdata/
+*.xcuserstate
+
+# 秘密（入れない。scan でも止める）
+*.p8
+*.p12
+*.mobileprovision
+.env
+.env.*
+!.env.example
+
+.DS_Store

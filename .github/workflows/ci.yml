@@ -1,0 +1,27 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  ci:
+    uses: enludus-daily/daily-actions/.github/workflows/ios-ci.yml@1065caf75ae93254ba41ca35eb0bc8ef0dfe81ba # daily-actions 2026-11-05-fixed-signing-cert
+    with:
+      actions-sha: 1065caf75ae93254ba41ca35eb0bc8ef0dfe81ba
+      scheme: DailyApp
+      # iPhone Duo の全画面の表示には Xcode 27.1（iOS 27.1 SDK）が要る（Apple Tech Talk「Prepare your app for iPhone Duo」）。
+      # xcode-27 ランナーは GitHub で Preview 扱い（actions/runner-images #14404）。
+      runs-on: xcode-27
+      xcode-version: "27.1"
+      test-destination: "platform=iOS Simulator,name=iPhone Duo,OS=27.1"
+      screenshot-device: iPhone Duo
+      # 撮る画面（アプリが起動引数 -screenshotScene <名前> で開く画面。@dark でダークモード）。手順書 9.5
+      screenshot-scenes: launch
+      guard-disabled: ${{ vars.DAILY_GUARD_DISABLED == 'true' && 'true' || 'false' }}

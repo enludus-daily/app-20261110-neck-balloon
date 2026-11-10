@@ -1,0 +1,29 @@
+# workflow_dispatch だけ（pull_request から秘密に届かないようにする）。テンプレート自身では動かさない。
+name: TestFlight
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: testflight
+  cancel-in-progress: false
+jobs:
+  testflight:
+    if: github.repository != 'enludus-daily/daily-app-template'
+    uses: enludus-daily/daily-actions/.github/workflows/ios-testflight.yml@1065caf75ae93254ba41ca35eb0bc8ef0dfe81ba # daily-actions 2026-11-05-fixed-signing-cert
+    with:
+      actions-sha: 1065caf75ae93254ba41ca35eb0bc8ef0dfe81ba
+      scheme: DailyApp
+      # iPhone Duo の全画面の表示には Xcode 27.1（iOS 27.1 SDK）が要る（Apple Tech Talk「Prepare your app for iPhone Duo」）。
+      # xcode-27 ランナーは GitHub で Preview 扱い（actions/runner-images #14404）。
+      runs-on: xcode-27
+      xcode-version: "27.1"
+      team-id: ${{ vars.APPLE_TEAM_ID }}
+      guard-disabled: ${{ vars.DAILY_GUARD_DISABLED == 'true' && 'true' || 'false' }}
+    secrets:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_P8: ${{ secrets.ASC_P8 }}
+      SIGNING_CERT_P12_BASE64: ${{ secrets.SIGNING_CERT_P12_BASE64 }}
+      SIGNING_CERT_PASSWORD: ${{ secrets.SIGNING_CERT_PASSWORD }}

@@ -1,0 +1,21 @@
+{
+  "_doc": "App Store Connect に API で入れる情報（.github/workflows/asc.yml の metadata が読む）。文字数：name・subtitle 30、keywords 100（カンマ区切り）、promotionalText 170、description 4000。カテゴリの ID は EDUCATION・PRODUCTIVITY・UTILITIES・LIFESTYLE・HEALTH_AND_FITNESS など。審査への提出と App プライバシーの申告は本人が行う。",
+  "locale": "ja",
+  "name": "",
+  "subtitle": "",
+  "primaryCategory": "",
+  "secondaryCategory": "",
+  "supportUrl": "https://github.com/enludus-daily/__REPO__/issues",
+  "privacyPolicyUrl": "https://github.com/enludus-daily/__REPO__/blob/main/PRIVACY.md",
+  "keywords": "",
+  "promotionalText": "",
+  "description": "",
+  "whatToTest": "",
+  "en-US": {
+    "name": "",
+    "subtitle": "",
+    "keywords": "",
+    "promotionalText": "",
+    "description": ""
+  }
+}

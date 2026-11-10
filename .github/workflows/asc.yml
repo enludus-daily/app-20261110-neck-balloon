@@ -1,0 +1,31 @@
+# App Store Connect API（手動）。daily-actions の ios-asc.yml を呼ぶ。テンプレート自身では動かさない。
+#   metadata   : docs/app-store.json の名前・説明・カテゴリ・URL などを入れ、提出用のバージョンにビルドを選ぶ（提出はしない）
+#   distribute : いちばん新しいビルドを内部テストのグループに配信する（アップロードはしない）
+#   products   : docs/products.json の App 内課金（買い切り・自動更新サブスク）と価格を作る（提出はしない）
+name: App Store Connect
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: metadata・distribute・products
+        type: choice
+        options: [metadata, distribute, products]
+        default: metadata
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: asc
+  cancel-in-progress: false
+jobs:
+  asc:
+    if: github.repository != 'enludus-daily/daily-app-template'
+    uses: enludus-daily/daily-actions/.github/workflows/ios-asc.yml@1065caf75ae93254ba41ca35eb0bc8ef0dfe81ba # daily-actions 2026-11-05-fixed-signing-cert
+    with:
+      actions-sha: 1065caf75ae93254ba41ca35eb0bc8ef0dfe81ba
+      command: ${{ inputs.command }}
+      guard-disabled: ${{ vars.DAILY_GUARD_DISABLED == 'true' && 'true' || 'false' }}
+    secrets:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_P8: ${{ secrets.ASC_P8 }}

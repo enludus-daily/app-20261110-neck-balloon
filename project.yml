@@ -1,0 +1,66 @@
+# XcodeGen の spec（https://github.com/yonaskolb/XcodeGen）。.xcodeproj はコミットせず、CI と手元で生成する。
+# 名前と Bundle ID は scripts/new-app.sh が書き換える（テンプレートの名前・Bundle ID の文字列を全部置き換える）。
+name: DailyApp
+options:
+  developmentLanguage: ja
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "6.0"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    DEAD_CODE_STRIPPING: YES
+targets:
+  DailyApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: App/Sources
+      - path: App/Resources
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: DailyApp
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        # 標準の HTTPS 以外の暗号を使わない前提。使うなら本人に戻す（輸出規制の申告が変わる）
+        ITSAppUsesNonExemptEncryption: false
+        LSRequiresIPhoneOS: true
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.enludus.daily.template
+        PRODUCT_NAME: DailyApp
+        # iPhone だけ（iPad 対応にすると iPad のスクリーンショットも提出に要る）
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_STYLE: Automatic
+  DailyAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: DailyApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.enludus.daily.template.tests
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  DailyApp:
+    build:
+      targets:
+        DailyApp: all
+        DailyAppTests: [test]
+    test:
+      gatherCoverageData: true
+      targets:
+        - DailyAppTests
