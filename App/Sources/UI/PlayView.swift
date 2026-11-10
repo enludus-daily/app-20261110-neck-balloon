@@ -80,7 +80,7 @@ struct PlayView: View {
         GeometryReader { geo in
             let w = geo.size.width, h = geo.size.height
             let c = CGPoint(x: w / 2, y: h / 2)
-            let r = min(w, h) * 0.36
+            let r = min(w, h) * 0.3
             let dir = shownMove?.screenDirection ?? (x: 0.0, y: 1.0)
             let ringPos = CGPoint(x: c.x + dir.x * r, y: c.y - dir.y * r)
             let along = max(-0.35, min(1.25, shownProgress))
@@ -102,7 +102,7 @@ struct PlayView: View {
                     }
                     .stroke(Theme.skyDeep.opacity(0.35), style: StrokeStyle(lineWidth: 1, dash: [2, 6]))
                     CloudRing(fill: fill, active: s.phase != .returning)
-                        .frame(width: r * 1.25)
+                        .frame(width: r * 1.15)
                         .scaleEffect(reduceMotion || enterAge > 0.4 ? 1 : 1 + 0.08 * (1 - enterAge / 0.4))
                         .position(ringPos)
                         .opacity(s.phase == .returning ? 0.55 : 1)
