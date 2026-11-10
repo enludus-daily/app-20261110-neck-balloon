@@ -179,8 +179,8 @@ struct MirrorDetectorTests {
 struct CourseLibraryTests {
     @Test func eightFreeAndSixteenPro() {
         #expect(CourseLibrary.free.count == 8)
-        #expect(CourseLibrary.all.filter(\.isPro).count == 16)
-        #expect(Set(CourseLibrary.all.map(\.id)).count == CourseLibrary.all.count)
+        #expect(CourseLibrary.all.filter { $0.isPro }.count == 16)
+        #expect(Set(CourseLibrary.all.map { $0.id }).count == CourseLibrary.all.count)
     }
 
     @Test func everyCourseIsAboutAMinuteOrTwo() {
