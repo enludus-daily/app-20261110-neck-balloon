@@ -180,6 +180,9 @@ final class AppModel {
         if scene.hasPrefix("en-") {
             forcedLocale = Locale(identifier: "en_US")
             scene.removeFirst(3)
+        } else {
+            // シミュレータは英語なので、名前に en- がない場面は日本語で撮る
+            forcedLocale = Locale(identifier: "ja_JP")
         }
         progress = Self.sampleProgress(today: today)
         switch scene {

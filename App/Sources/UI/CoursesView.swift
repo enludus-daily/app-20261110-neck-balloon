@@ -65,9 +65,13 @@ struct CoursesView: View {
                     Text(c.title.text(locale)).font(Theme.serif(16, .medium)).foregroundStyle(Theme.ink).lineLimit(1)
                     Text(c.note.text(locale)).font(Theme.text(11)).foregroundStyle(Theme.inkSoft).lineLimit(2, reservesSpace: true)
                     HStack(spacing: 3) {
-                        ForEach(Array(c.moves.filter { !$0.isArc }.prefix(6).enumerated()), id: \.offset) { _, m in MoveGlyph(move: m) }
-                        Spacer()
+                        ForEach(Array(c.moves.filter { !$0.isArc }.prefix(4).enumerated()), id: \.offset) { _, m in MoveGlyph(move: m) }
+                        if c.moves.contains(where: { $0.isArc }) {
+                            Image(systemName: "arrow.clockwise").font(.system(size: 10)).foregroundStyle(Theme.skyDeep)
+                        }
+                        Spacer(minLength: 2)
                         Text(verbatim: "\(c.estimatedSeconds)s").font(Theme.text(11)).monospacedDigit().foregroundStyle(Theme.inkSoft)
+                            .fixedSize()
                     }
                 }
                 .padding(10)

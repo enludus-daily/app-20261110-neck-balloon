@@ -80,7 +80,7 @@ struct PlayView: View {
         GeometryReader { geo in
             let w = geo.size.width, h = geo.size.height
             let c = CGPoint(x: w / 2, y: h / 2)
-            let r = min(w, h) * 0.34
+            let r = min(w, h) * 0.36
             let dir = shownMove?.screenDirection ?? (x: 0.0, y: 1.0)
             let ringPos = CGPoint(x: c.x + dir.x * r, y: c.y - dir.y * r)
             let along = max(-0.35, min(1.25, shownProgress))
@@ -95,8 +95,14 @@ struct PlayView: View {
             ZStack {
                 if let m = shownMove {
                     let fill = s.phase == .returning ? 1 : s.holdFraction
+                    // まんなかから輪への、細い点線の道
+                    Path { p in
+                        p.move(to: c)
+                        p.addLine(to: ringPos)
+                    }
+                    .stroke(Theme.skyDeep.opacity(0.35), style: StrokeStyle(lineWidth: 1, dash: [2, 6]))
                     CloudRing(fill: fill, active: s.phase != .returning)
-                        .frame(width: r * 1.0)
+                        .frame(width: r * 1.25)
                         .scaleEffect(reduceMotion || enterAge > 0.4 ? 1 : 1 + 0.08 * (1 - enterAge / 0.4))
                         .position(ringPos)
                         .opacity(s.phase == .returning ? 0.55 : 1)
@@ -104,7 +110,7 @@ struct PlayView: View {
                         let q = completeAge / 0.7
                         Circle()
                             .stroke(Theme.peachDeep.opacity(0.6 * (1 - q)), lineWidth: 2)
-                            .frame(width: r * (0.95 + 0.6 * q))
+                            .frame(width: r * (1.2 + 0.6 * q))
                             .position(ringPos)
                     }
                     if m.isArc {
@@ -118,8 +124,8 @@ struct PlayView: View {
                 // まんなかの印（戻る場所）
                 Circle().stroke(Theme.ink.opacity(0.18), lineWidth: 1).frame(width: 10, height: 10).position(c)
                 Balloon(tilt: .degrees(max(-30, min(30, s.pose.roll * 0.7))), glow: s.phase == .holding ? s.holdFraction : 0)
-                    .frame(height: r * 0.95)
-                    .position(x: bx, y: by + r * 0.12)
+                    .frame(height: r * 1.15)
+                    .position(x: bx, y: by + r * 0.15)
                     .animation(reduceMotion ? nil : .interactiveSpring(response: 0.25, dampingFraction: 0.85), value: bx)
             }
             .contentShape(Rectangle())

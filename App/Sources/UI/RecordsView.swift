@@ -57,11 +57,14 @@ struct RecordsView: View {
                     }
                 }
                 Canvas { ctx, size in
-                    let cols = weeks
-                    let gap: CGFloat = 2
-                    let cell = min((size.width - gap * CGFloat(cols - 1)) / CGFloat(cols), (size.height - gap * 6) / 7)
+                    // 4 週は「横に 7 日 × 縦に週」、1 年は「横に週 × 縦に 7 日」
+                    let byWeekRows = weeks <= 8
+                    let cols = byWeekRows ? 7 : weeks
+                    let rows = byWeekRows ? weeks : 7
+                    let gap: CGFloat = byWeekRows ? 6 : 2
+                    let cell = min((size.width - gap * CGFloat(cols - 1)) / CGFloat(cols), (size.height - gap * CGFloat(rows - 1)) / CGFloat(rows))
                     for (i, d) in days.enumerated() {
-                        let col = i / 7, row = i % 7
+                        let col = byWeekRows ? i % 7 : i / 7, row = byWeekRows ? i / 7 : i % 7
                         let rect = CGRect(x: CGFloat(col) * (cell + gap), y: CGFloat(row) * (cell + gap), width: cell, height: cell)
                         let score = d.record?.bestScore ?? -1
                         let color: Color = switch score {
@@ -74,7 +77,7 @@ struct RecordsView: View {
                         ctx.fill(Path(roundedRect: rect, cornerRadius: cell * 0.25), with: .color(color))
                     }
                 }
-                .frame(height: app.isPro ? 70 : 120)
+                .frame(height: app.isPro ? 70 : 150)
                 .accessibilityElement()
                 .accessibilityLabel(Text("遊んだ日の暦"))
                 .accessibilityValue(Text("\(days.filter { ($0.record?.plays ?? 0) > 0 }.count) 日"))
