@@ -62,7 +62,7 @@ struct HomeView: View {
                 SkyBackdrop(sky: c.sky, drift: Double(app.todayOrdinal % 7) / 7)
                 GeometryReader { geo in
                     let w = geo.size.width, h = geo.size.height
-                    let d = c.moves.first?.screenDirection ?? (1, 0)
+                    let d = c.moves.first?.screenDirection ?? (x: 1.0, y: 0.0)
                     CloudRing(fill: app.playedToday ? 1 : 0.0)
                         .frame(width: h * 0.5)
                         .position(x: w / 2 + d.x * w * 0.27, y: h * 0.5 - d.y * h * 0.28)

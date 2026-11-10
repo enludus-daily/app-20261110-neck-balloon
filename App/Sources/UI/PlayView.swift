@@ -81,7 +81,7 @@ struct PlayView: View {
             let w = geo.size.width, h = geo.size.height
             let c = CGPoint(x: w / 2, y: h / 2)
             let r = min(w, h) * 0.34
-            let dir = shownMove?.screenDirection ?? (0, 1)
+            let dir = shownMove?.screenDirection ?? (x: 0.0, y: 1.0)
             let ringPos = CGPoint(x: c.x + dir.x * r, y: c.y - dir.y * r)
             let along = max(-0.35, min(1.25, shownProgress))
             // ずれ：輪の中心からはずれた分を、進む向きと直角に。速すぎると風で揺れる
