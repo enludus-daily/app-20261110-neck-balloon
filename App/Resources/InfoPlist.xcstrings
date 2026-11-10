@@ -1,0 +1,40 @@
+{
+  "sourceLanguage": "ja",
+  "strings": {
+    "CFBundleDisplayName": {
+      "extractionState": "manual",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "くびふうせん"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neck Balloon"
+          }
+        }
+      }
+    },
+    "NSCameraUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "首のストレッチで、顔の向き（角度）を読むためだけにカメラを使います。映像は iPhone の中だけで処理し、保存も送信もしません。"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The camera is used only to read your head angle during neck stretches. Video is processed on your iPhone and never saved or sent."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

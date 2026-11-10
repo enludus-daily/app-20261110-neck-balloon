@@ -1,0 +1,38 @@
+{
+  "identifier" : "3C9E0A11",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "480",
+      "familyShareable" : true,
+      "internalID" : "6754000301",
+      "localizations" : [
+        {
+          "description" : "24 コース・1 年の記録・仕事中のお知らせ",
+          "displayName" : "くびふうせん Pro",
+          "locale" : "ja"
+        }
+      ],
+      "productID" : "com.enludus.daily.003.pro",
+      "referenceName" : "Pro",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6754000300",
+    "_locale" : "ja",
+    "_storefront" : "JPN",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

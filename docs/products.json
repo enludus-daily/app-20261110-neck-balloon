@@ -3,15 +3,23 @@
   "products": [
     {
       "type": "NON_CONSUMABLE",
-      "productId": "com.enludus.daily.template.pro",
+      "productId": "com.enludus.daily.003.pro",
       "referenceName": "Pro",
       "price": 480,
       "familySharable": true,
-      "reviewNote": "Pro を買うと、すべての〇〇と詳しい振り返りが使えます。課金の画面は設定 > Pro から開けます。",
+      "reviewNote": "Pro を買うと、全 24 コース・1 年の記録と週ごとのグラフ・仕事中の 1 時間ごとのお知らせが使えます。課金の画面はホーム右上の「Pro」または設定 > Pro を見る から開けます。",
       "reviewScreenshot": "docs/iap/paywall.png",
       "localizations": [
-        {"locale": "ja", "name": "Pro", "description": "すべての〇〇と詳しい振り返り"},
-        {"locale": "en-US", "name": "Pro", "description": "All 〇〇 and detailed reviews"}
+        {
+          "locale": "ja",
+          "name": "くびふうせん Pro",
+          "description": "全 24 コース・1 年の記録・仕事中のお知らせ"
+        },
+        {
+          "locale": "en-US",
+          "name": "Neck Balloon Pro",
+          "description": "All 24 courses, a year of records, work reminders"
+        }
       ]
     }
   ]

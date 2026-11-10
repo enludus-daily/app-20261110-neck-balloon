@@ -1,0 +1,1156 @@
+{
+  "sourceLanguage": "ja",
+  "strings": {
+    "%lld 日": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld days"
+          }
+        }
+      }
+    },
+    "%lld 日つづけて": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld-day streak"
+          }
+        }
+      }
+    },
+    "%lld 時": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld:00"
+          }
+        }
+      }
+    },
+    "1 回ためせる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try once"
+          }
+        }
+      }
+    },
+    "1 回の購入で、ファミリー共有にも対応。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One purchase, shared with Family Sharing."
+          }
+        }
+      }
+    },
+    "1 回遊ぶと、首の動いた角度がここに描かれます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play once and your neck's range will be drawn here."
+          }
+        }
+      }
+    },
+    "1 年の記録と週ごとのグラフ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A year of records and weekly charts"
+          }
+        }
+      }
+    },
+    "1 年分は Pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full year with Pro"
+          }
+        }
+      }
+    },
+    "24 コースすべて": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All 24 courses"
+          }
+        }
+      }
+    },
+    "Pro にする": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get Pro"
+          }
+        }
+      }
+    },
+    "Pro のコース": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro course"
+          }
+        }
+      }
+    },
+    "Pro を使っています": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have Pro"
+          }
+        }
+      }
+    },
+    "Pro を見る": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "See Pro"
+          }
+        }
+      }
+    },
+    "iPhone を両手で持ち、首といっしょに傾けて": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold your iPhone in both hands and tilt it with your head"
+          }
+        }
+      }
+    },
+    "iPhone を机に立てて、首をゆっくり倒す・うなずく・ふり向く。その動きで、風船が雲の輪へ流れていきます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stand your iPhone on the desk, then slowly tilt, nod and turn your head. The balloon drifts with you into the cloud rings."
+          }
+        }
+      }
+    },
+    "iPhone を目の高さに立てて、顔が映る位置で": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stand your iPhone at eye level so it can see your face"
+          }
+        }
+      }
+    },
+    "あと少し。痛くないところまで": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A little more, only as far as is comfortable"
+          }
+        }
+      }
+    },
+    "いまは購入できません。通信を確かめて、あとでもう一度開いてください": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purchases aren't available right now. Check your connection and try again later"
+          }
+        }
+      }
+    },
+    "うなずく": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nod"
+          }
+        }
+      }
+    },
+    "おかえりなさい。今日の 1 分から、また。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome back. Start again with today's minute."
+          }
+        }
+      }
+    },
+    "おつかれさま": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicely done"
+          }
+        }
+      }
+    },
+    "お知らせ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reminders"
+          }
+        }
+      }
+    },
+    "くびふうせん": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neck Balloon"
+          }
+        }
+      }
+    },
+    "この 7 日": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last 7 days"
+          }
+        }
+      }
+    },
+    "この 7 日はまだ遊んでいません。今日の 1 分で、首の角度が描かれます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No sessions in the last 7 days. Today's minute will draw your neck's range."
+          }
+        }
+      }
+    },
+    "この iPhone ではカメラで遊べません": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera play isn't available on this iPhone"
+          }
+        }
+      }
+    },
+    "このアプリについて": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
+          }
+        }
+      }
+    },
+    "このアプリは医療機器ではありません。症状の改善を約束するものではありません。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This app is not a medical device and makes no promise to relieve symptoms."
+          }
+        }
+      }
+    },
+    "そのまま %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold %lld"
+          }
+        }
+      }
+    },
+    "そのまま、5 秒": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold it, 5 seconds"
+          }
+        }
+      }
+    },
+    "なぎ（90 点以上）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calm (90+)"
+          }
+        }
+      }
+    },
+    "ななめ・回す・夜の雲など、Pro の 16 コース。毎日の 1 分が全コースから選ばれます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "16 Pro courses with diagonals, circles and night clouds. Today's minute picks from every course."
+          }
+        }
+      }
+    },
+    "はじめの日": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First day"
+          }
+        }
+      }
+    },
+    "はじめは「小さめ」がおすすめです。痛いとき・しびれがあるときは、すぐにやめてください。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start with Small. Stop right away if you feel pain or numbness."
+          }
+        }
+      }
+    },
+    "はじめる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start"
+          }
+        }
+      }
+    },
+    "ふつう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Medium"
+          }
+        }
+      }
+    },
+    "まっすぐに戻して": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to center"
+          }
+        }
+      }
+    },
+    "まっすぐ前を見て": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look straight ahead"
+          }
+        }
+      }
+    },
+    "もう 1 回": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Once more"
+          }
+        }
+      }
+    },
+    "もう一度読み込む": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reload"
+          }
+        }
+      }
+    },
+    "やめる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quit"
+          }
+        }
+      }
+    },
+    "ゆっくり": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slowly"
+          }
+        }
+      }
+    },
+    "ゆっくり、大きく、保つ。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slow, wide, and hold."
+          }
+        }
+      }
+    },
+    "ゆっくり。風が乱れています": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slowly — the wind is stirring"
+          }
+        }
+      }
+    },
+    "カメラ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera"
+          }
+        }
+      }
+    },
+    "カメラの許可がありません": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No camera access"
+          }
+        }
+      }
+    },
+    "カメラは、向きを読むだけ。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The camera only reads angles."
+          }
+        }
+      }
+    },
+    "カメラを使わずに、iPhone を傾けるか、指でなぞって同じコースを遊べます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play the same course without the camera by tilting your iPhone or dragging with your finger."
+          }
+        }
+      }
+    },
+    "カードを共有": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share card"
+          }
+        }
+      }
+    },
+    "コース": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Courses"
+          }
+        }
+      }
+    },
+    "スキップ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skip"
+          }
+        }
+      }
+    },
+    "ストレッチ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stretches"
+          }
+        }
+      }
+    },
+    "プライバシー": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy"
+          }
+        }
+      }
+    },
+    "ホームへ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Home"
+          }
+        }
+      }
+    },
+    "上": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up"
+          }
+        }
+      }
+    },
+    "下": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Down"
+          }
+        }
+      }
+    },
+    "今日の 1 分": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's minute"
+          }
+        }
+      }
+    },
+    "今日の 1 分：できた": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's minute: done"
+          }
+        }
+      }
+    },
+    "仕事中、1 時間ごとの 1 分": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A minute every hour at work"
+          }
+        }
+      }
+    },
+    "仕事中、1 時間ごとの 1 分（Pro）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hourly minute at work (Pro)"
+          }
+        }
+      }
+    },
+    "使い方をもう一度見る": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show the intro again"
+          }
+        }
+      }
+    },
+    "倒す": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilt"
+          }
+        }
+      }
+    },
+    "傾けて遊ぶ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play by tilting"
+          }
+        }
+      }
+    },
+    "傾ける": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilt"
+          }
+        }
+      }
+    },
+    "先週": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last week"
+          }
+        }
+      }
+    },
+    "動かす角度": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Range of motion"
+          }
+        }
+      }
+    },
+    "右に倒す": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilt right"
+          }
+        }
+      }
+    },
+    "向く": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn"
+          }
+        }
+      }
+    },
+    "大きめ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large"
+          }
+        }
+      }
+    },
+    "小さめ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Small"
+          }
+        }
+      }
+    },
+    "左に倒す": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilt left"
+          }
+        }
+      }
+    },
+    "左右を入れ替えました（設定で戻せます）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swapped left and right (change it back in Settings)"
+          }
+        }
+      }
+    },
+    "左右を入れ替える（カメラ）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swap left and right (camera)"
+          }
+        }
+      }
+    },
+    "平日 10〜18 時": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekdays, 10 am–6 pm"
+          }
+        }
+      }
+    },
+    "平日の 10〜18 時に、ひと息のお知らせ。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gentle reminders on weekdays, 10 am to 6 pm."
+          }
+        }
+      }
+    },
+    "広告なし・ずっと使える": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No ads, yours forever"
+          }
+        }
+      }
+    },
+    "復元しました": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restored"
+          }
+        }
+      }
+    },
+    "復元できる購入が見つかりませんでした": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No purchases to restore"
+          }
+        }
+      }
+    },
+    "指": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finger"
+          }
+        }
+      }
+    },
+    "指で遊ぶ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play with finger"
+          }
+        }
+      }
+    },
+    "指で風船を輪までゆっくりなぞって": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slowly drag the balloon into the ring"
+          }
+        }
+      }
+    },
+    "振動": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haptics"
+          }
+        }
+      }
+    },
+    "次へ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next"
+          }
+        }
+      }
+    },
+    "毎日のお知らせ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily reminder"
+          }
+        }
+      }
+    },
+    "無料で 8 コース、Pro で 24 コース。どれも 1 分前後です。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "8 free courses, 24 with Pro. Each takes about a minute."
+          }
+        }
+      }
+    },
+    "続けた日": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Streak"
+          }
+        }
+      }
+    },
+    "肩の力をぬいて、まっすぐ前を見て": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Relax your shoulders and look straight ahead"
+          }
+        }
+      }
+    },
+    "角度はカメラで読んだめやすです。医療の測定ではありません。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angles are camera estimates, not medical measurements."
+          }
+        }
+      }
+    },
+    "記録": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Records"
+          }
+        }
+      }
+    },
+    "設定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        }
+      }
+    },
+    "設定でカメラを許可する": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow camera in Settings"
+          }
+        }
+      }
+    },
+    "読み込んでいます…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading…"
+          }
+        }
+      }
+    },
+    "買い切り。サブスクリプションではありません。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One-time purchase. Not a subscription."
+          }
+        }
+      }
+    },
+    "購入できませんでした。時間をおいて、もう一度お試しください": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The purchase didn't go through. Please try again later"
+          }
+        }
+      }
+    },
+    "購入の承認を待っています": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for purchase approval"
+          }
+        }
+      }
+    },
+    "購入を復元": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore Purchases"
+          }
+        }
+      }
+    },
+    "通知が許可されていません。設定アプリの「通知」から許可できます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications are off. You can allow them in the Settings app under Notifications."
+          }
+        }
+      }
+    },
+    "速く動かすと風が乱れて点が減ります。輪の中で 5 秒保つと、輪が満ちます。痛いときは、すぐにやめてください。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fast moves stir up the wind and cost points. Hold inside a ring for 5 seconds to fill it. Stop right away if anything hurts."
+          }
+        }
+      }
+    },
+    "週ごとの移り変わりは Pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly trends with Pro"
+          }
+        }
+      }
+    },
+    "遊び方": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How to play"
+          }
+        }
+      }
+    },
+    "遊んだ回数": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sessions"
+          }
+        }
+      }
+    },
+    "遊んだ日": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Days played"
+          }
+        }
+      }
+    },
+    "遊んだ日の暦": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calendar of days played"
+          }
+        }
+      }
+    },
+    "閉じる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        }
+      }
+    },
+    "音": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sound"
+          }
+        }
+      }
+    },
+    "音と振動": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sound & Haptics"
+          }
+        }
+      }
+    },
+    "顔が見えません。iPhone を目の高さに立ててください": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't see your face. Stand your iPhone at eye level"
+          }
+        }
+      }
+    },
+    "顔の向きは iPhone の中だけで計算し、映像は保存も送信もしません。カメラを使わず、傾けたり指でなぞったりしても遊べます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Head angles are calculated on your iPhone; video is never saved or sent. You can also play without the camera by tilting the phone or using your finger."
+          }
+        }
+      }
+    },
+    "顔の向きは iPhone の中だけで計算します。カメラの映像は保存も送信もしません。記録はこの iPhone の中だけに残ります。アカウント・広告・解析はありません。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Head angles are calculated on your iPhone. Camera video is never saved or sent. Your records stay on this iPhone. No accounts, ads or analytics."
+          }
+        }
+      }
+    },
+    "顔の向きを読むためだけにカメラを使います（映像は保存も送信もしません）。許可しなくても、iPhone を傾けるか、指でなぞって同じコースを遊べます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The camera is used only to read your head angle (video is never saved or sent). Without it, you can play the same course by tilting your iPhone or dragging with your finger."
+          }
+        }
+      }
+    },
+    "風が乱れた秒数": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seconds of wind"
+          }
+        }
+      }
+    },
+    "首で、風船を運ぶ。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Steer a balloon with your neck."
+          }
+        }
+      }
+    },
+    "首の 1 分を、毎日ちがう空で。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A neck minute under a new sky every day."
+          }
+        }
+      }
+    },
+    "首の動いた範囲": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neck range"
+          }
+        }
+      }
+    },
+    "首の動いた角度が、週ごとにどう広がったかを見られます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "See how your neck's range widens week by week."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

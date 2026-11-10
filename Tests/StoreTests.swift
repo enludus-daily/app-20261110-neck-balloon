@@ -1,5 +1,5 @@
 import Testing
-@testable import DailyApp
+@testable import NeckBalloon
 
 struct EntitlementsTests {
     let bundle = "com.enludus.daily.template"

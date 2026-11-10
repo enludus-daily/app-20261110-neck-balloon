@@ -1,6 +1,6 @@
 # XcodeGen の spec（https://github.com/yonaskolb/XcodeGen）。.xcodeproj はコミットせず、CI と手元で生成する。
 # 名前と Bundle ID は scripts/new-app.sh が書き換える（テンプレートの名前・Bundle ID の文字列を全部置き換える）。
-name: DailyApp
+name: NeckBalloon
 options:
   developmentLanguage: ja
   deploymentTarget:
@@ -10,11 +10,12 @@ settings:
   base:
     MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: "1"
-    SWIFT_VERSION: "6.0"
+    # カメラ（AVFoundation・ARKit）の delegate を素直に書くため、Swift 5 の言語モードにする（並行性の検査は警告）
+    SWIFT_VERSION: "5.0"
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     DEAD_CODE_STRIPPING: YES
 targets:
-  DailyApp:
+  NeckBalloon:
     type: application
     platform: iOS
     sources:
@@ -23,44 +24,47 @@ targets:
     info:
       path: App/Info.plist
       properties:
-        CFBundleDisplayName: DailyApp
+        CFBundleDisplayName: "くびふうせん"
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         # 標準の HTTPS 以外の暗号を使わない前提。使うなら本人に戻す（輸出規制の申告が変わる）
         ITSAppUsesNonExemptEncryption: false
         LSRequiresIPhoneOS: true
+        CFBundleLocalizations: [ja, en]
         UILaunchScreen: {}
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
+        # 前面カメラは顔の向き（角度）を読むためだけに使う。映像は保存も送信もしない（英語は InfoPlist.xcstrings）
+        NSCameraUsageDescription: 首のストレッチで、顔の向き（角度）を読むためだけにカメラを使います。映像は iPhone の中だけで処理し、保存も送信もしません。
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.enludus.daily.template
-        PRODUCT_NAME: DailyApp
+        PRODUCT_BUNDLE_IDENTIFIER: com.enludus.daily.003
+        PRODUCT_NAME: NeckBalloon
         # iPhone だけ（iPad 対応にすると iPad のスクリーンショットも提出に要る）
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         CODE_SIGN_STYLE: Automatic
-  DailyAppTests:
+  NeckBalloonTests:
     type: bundle.unit-test
     platform: iOS
     sources:
       - path: Tests
     dependencies:
-      - target: DailyApp
+      - target: NeckBalloon
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.enludus.daily.template.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.enludus.daily.003.tests
         GENERATE_INFOPLIST_FILE: YES
 schemes:
-  DailyApp:
+  NeckBalloon:
     build:
       targets:
-        DailyApp: all
-        DailyAppTests: [test]
+        NeckBalloon: all
+        NeckBalloonTests: [test]
     test:
       gatherCoverageData: true
       targets:
-        - DailyAppTests
+        - NeckBalloonTests
