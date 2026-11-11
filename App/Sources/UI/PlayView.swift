@@ -167,7 +167,7 @@ struct PlayView: View {
         case .countIn: return "まっすぐ前を見て"
         case .reaching: return s.progress > 0.4 ? "あと少し。痛くないところまで" : "ゆっくり"
         case .holding:
-            let left = max(0, Int(((s.move?.holdSeconds ?? 0) * (1 - s.holdFraction)).rounded(.up)))
+            let left = max(0, Int((s.holdTarget * (1 - s.holdFraction)).rounded(.up)))
             return "そのまま \(left)"
         case .returning: return "まっすぐに戻して"
         case .finished: return "おつかれさま"
@@ -221,10 +221,14 @@ struct PlayView: View {
         switch play.sourceStatus {
         case .denied, .unavailable:
             sourceProblem(title: play.sourceStatus == .denied ? LocalizedStringKey("カメラの許可がありません") : LocalizedStringKey("この iPhone ではカメラで遊べません"))
-        case .lost where play.input == .camera:
+        default:
+            EmptyView()
+        }
+        // 見失ってもすぐには出さない（行きすぎで見えなくなっただけのときは、そのまま数える）
+        if play.showFaceBack {
             VStack {
                 Spacer()
-                Text("顔が見えません。iPhone を目の高さに立ててください")
+                Text("顔を画面にもどしてください（iPhone は目の高さに）")
                     .font(Theme.text(13, .medium))
                     .padding(.horizontal, 14).padding(.vertical, 8)
                     .background(Capsule().fill(.white.opacity(0.85)))
@@ -232,8 +236,6 @@ struct PlayView: View {
                     .padding(.bottom, 110)
             }
             .allowsHitTesting(false)
-        default:
-            EmptyView()
         }
         if play.flippedNotice {
             VStack {

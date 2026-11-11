@@ -70,7 +70,7 @@ struct CoursesView: View {
                             Image(systemName: "arrow.clockwise").font(.system(size: 10)).foregroundStyle(Theme.skyDeep)
                         }
                         Spacer(minLength: 2)
-                        Text(verbatim: "\(c.estimatedSeconds)s").font(Theme.text(11)).monospacedDigit().foregroundStyle(Theme.inkSoft)
+                        Text(verbatim: "\(c.estimatedSeconds(app.progress.settings.leniency))s").font(Theme.text(11)).monospacedDigit().foregroundStyle(Theme.inkSoft)
                             .fixedSize()
                     }
                 }

@@ -244,8 +244,11 @@ final class VisionFaceReader: NSObject, AVCaptureVideoDataOutputSampleBufferDele
         try? h.perform([request])
         guard let face = request.results?.first else { handler(nil); return }
         let d = 180 / Double.pi
+        // VNFaceObservation の pitch は「うなずく（下を向く）と +」（Vision のヘッダーの説明。範囲は ±π/2）。
+        // このアプリの HeadPose は「見上げると +」なので、符号を逆にする。
+        // yaw・roll は、もとから .upMirrored の向きで読んだ値を使っている（左右が逆の端末は MirrorDetector が直す）。
         let pose = HeadPose(yaw: (face.yaw?.doubleValue ?? 0) * d,
-                            pitch: (face.pitch?.doubleValue ?? 0) * d,
+                            pitch: -(face.pitch?.doubleValue ?? 0) * d,
                             roll: -(face.roll?.doubleValue ?? 0) * d)
         handler(pose)
     }

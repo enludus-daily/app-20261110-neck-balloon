@@ -10,7 +10,8 @@ struct ScriptedMotion: Sendable {
 
     let keys: [Key]
 
-    init(course: Course, size: AngleSize, overshoot: Double = 1.05) {
+    /// 保つ長さは `leniency` に合わせる（既定の「ふつう」は長めなので、どちらのゆるさでも最後まで届く）
+    init(course: Course, size: AngleSize, overshoot: Double = 1.05, leniency: Leniency = .normal) {
         var keys: [Key] = [Key(time: 0, pose: .zero), Key(time: StretchSession.countInSeconds, pose: .zero)]
         var t = StretchSession.countInSeconds
         var current = HeadPose.zero
@@ -20,15 +21,15 @@ struct ScriptedMotion: Sendable {
             let travel = (target - current).length
             if m.isArc {
                 t += max(1.1, travel / 12); keys.append(Key(time: t, pose: target))
-                t += m.holdSeconds + 0.5; keys.append(Key(time: t, pose: target))
+                t += m.holdSeconds(leniency) + 0.5; keys.append(Key(time: t, pose: target))
             } else {
                 if current != .zero {
                     t += max(1.6, current.length / 18); keys.append(Key(time: t, pose: .zero))
                 }
                 t += 2.4; keys.append(Key(time: t, pose: target))
                 // 保つ間も、少しだけ揺れる（人の首らしく）
-                t += m.holdSeconds / 2 + 0.4; keys.append(Key(time: t, pose: target * 1.02))
-                t += m.holdSeconds / 2 + 0.4; keys.append(Key(time: t, pose: target))
+                t += m.holdSeconds(leniency) / 2 + 0.4; keys.append(Key(time: t, pose: target * 1.02))
+                t += m.holdSeconds(leniency) / 2 + 0.4; keys.append(Key(time: t, pose: target))
             }
             current = target
             let nextIsArc = i + 1 < course.moves.count && course.moves[i + 1].isArc
@@ -58,8 +59,8 @@ struct ScriptedMotion: Sendable {
     }
 
     /// エンジンに通して、途中の状態を作る（撮影用）
-    func run(until t: Double, course: Course, size: AngleSize, step: Double = 1.0 / 30) -> StretchSession {
-        var s = StretchSession(course: course, size: size)
+    func run(until t: Double, course: Course, size: AngleSize, leniency: Leniency = .loose, step: Double = 1.0 / 30) -> StretchSession {
+        var s = StretchSession(course: course, size: size, leniency: leniency)
         var x = 0.0
         while x <= t {
             s.update(pose: pose(at: x), at: x)

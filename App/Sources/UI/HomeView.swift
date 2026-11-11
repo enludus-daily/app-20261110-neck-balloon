@@ -93,7 +93,7 @@ struct HomeView: View {
                 HStack(alignment: .firstTextBaseline) {
                     Text(c.title.text(locale)).font(Theme.serif(24, .medium)).kerning(-0.4).foregroundStyle(Theme.ink)
                     Spacer()
-                    Text(verbatim: "\(c.estimatedSeconds)s").font(Theme.serif(15)).monospacedDigit().foregroundStyle(Theme.inkSoft)
+                    Text(verbatim: "\(c.estimatedSeconds(app.progress.settings.leniency))s").font(Theme.serif(15)).monospacedDigit().foregroundStyle(Theme.inkSoft)
                 }
                 Text(c.note.text(locale)).font(Theme.text(14)).foregroundStyle(Theme.ink.opacity(0.75))
                 HStack(spacing: 6) {

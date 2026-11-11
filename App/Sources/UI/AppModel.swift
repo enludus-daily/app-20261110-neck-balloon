@@ -259,9 +259,15 @@ final class PlayModel {
     @ObservationIgnored private var neutral = HeadPose.zero
     @ObservationIgnored private var detector = MirrorDetector()
     @ObservationIgnored private var finished = false
+    /// 最後に向きが届いた時刻
+    @ObservationIgnored private var lastPoseAt: Double?
+    /// 顔の見失いに気づくための時計（カメラのときだけ）
+    @ObservationIgnored private var lostTimer: Timer?
+    /// これだけ向きが届かなければ、顔を見失ったとみなす（秒）
+    static let lostAfter = 0.3
 
     init(course: Course, settings: Settings, source: HeadPoseSource) {
-        session = StretchSession(course: course, size: settings.size)
+        session = StretchSession(course: course, size: settings.size, leniency: settings.leniency)
         self.source = source
         mirror = settings.mirror
         input = settings.input
@@ -287,11 +293,37 @@ final class PlayModel {
         source.start()
         sourceStatus = source.status
         Haptics.prepare()
+        if input == .camera {
+            // ARKit・Vision は顔を見失うと向きを送らなくなる。時間だけはエンジンに進めてもらう
+            let timer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
+                MainActor.assumeIsolated { self?.checkLost() }
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            lostTimer = timer
+        }
     }
 
     func stop() {
+        lostTimer?.invalidate()
+        lostTimer = nil
         source?.stop()
         source?.onPose = nil
+    }
+
+    /// 顔を見失ったまま案内を出すとき（見失いが長い・目標から遠いところで見失った）
+    var showFaceBack: Bool { input == .camera && !frozen && session.needsFaceBack }
+
+    private func checkLost() {
+        guard !finished, let source else { return }
+        let t = CACurrentMediaTime()
+        let lost = source.status == .lost || (lastPoseAt.map { t - $0 > Self.lostAfter } ?? false)
+        guard lost else { return }
+        now = t
+        sourceStatus = source.status
+        let before = session
+        session.updateLost(at: t)
+        smoother.reset()
+        react(before: before, at: t)
     }
 
     /// 指のモード：画面の上の指の位置（中心からのずれ、半径 1 で輪）を向きにする
@@ -307,6 +339,7 @@ final class PlayModel {
     private func ingest(_ raw: HeadPose, at t: Double) {
         guard !finished else { return }
         now = t
+        lastPoseAt = t
         sourceStatus = source?.status ?? .idle
         var p = mirror ? raw.mirrored : raw
         let before = session
@@ -336,7 +369,11 @@ final class PlayModel {
             }
         }
 
-        // 手応え
+        react(before: before, at: t)
+    }
+
+    /// 手応え（音・振動）と、終わったときの知らせ
+    private func react(before: StretchSession, at t: Double) {
         if before.phase != .holding, session.phase == .holding {
             enteredAt = t
             Haptics.enter()

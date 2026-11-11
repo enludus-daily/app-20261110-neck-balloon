@@ -3,14 +3,45 @@ import Testing
 @testable import NeckBalloon
 
 /// 決まった動き（関数）をエンジンに 30 回/秒で流す
-private func drive(_ course: Course, size: AngleSize = .small, until limit: Double = 400, pose: (Double) -> HeadPose) -> StretchSession {
-    var s = StretchSession(course: course, size: size)
+private func drive(_ course: Course, size: AngleSize = .small, leniency: Leniency = .loose, until limit: Double = 400, pose: (Double) -> HeadPose) -> StretchSession {
+    var s = StretchSession(course: course, size: size, leniency: leniency)
     var t = 0.0
     while t <= limit, !s.isFinished {
         s.update(pose: pose(t), at: t)
         t += 1.0 / 30
     }
     return s
+}
+
+/// カメラの代わり：nil の時刻は顔を見失った（向きが届かない）として流す
+private func driveCamera(_ course: Course, size: AngleSize = .small, leniency: Leniency = .loose, until limit: Double = 400,
+                         pose: (Double) -> HeadPose?) -> StretchSession {
+    var s = StretchSession(course: course, size: size, leniency: leniency)
+    var t = 0.0
+    while t <= limit, !s.isFinished {
+        if let p = pose(t) { s.update(pose: p, at: t) } else { s.updateLost(at: t) }
+        t += 1.0 / 30
+    }
+    return s
+}
+
+/// 本物のカメラに近い見え方：目標の `seeUpTo` 倍より大きく動くと、顔を見失う
+private func camera(_ motion: ScriptedMotion, course: Course, size: AngleSize = .small, seeUpTo: Double) -> (Double) -> HeadPose? {
+    let limits = course.moves.map { $0.target(size).length * seeUpTo }
+    let reach = limits.min() ?? 0
+    return { t in
+        let p = motion.pose(at: t)
+        return p.length > reach ? nil : p
+    }
+}
+
+private func one(_ moves: [Move]) -> Course {
+    Course(id: "t", title: Phrase("t", "t"), note: Phrase("", ""), sky: .noon, moves: moves, isPro: false)
+}
+
+/// 数え 3 秒をまっすぐで過ごしてから、決まった時刻まで流す
+private func afterCountIn(_ s: inout StretchSession, from t: inout Double) {
+    while t < StretchSession.countInSeconds + 0.1 { s.update(pose: .zero, at: t); t += 1.0 / 30 }
 }
 
 /// 速い動き：0.25 秒で一気に届き、6 秒止まり、0.25 秒で戻る
@@ -75,7 +106,7 @@ struct StretchSessionTests {
         let s = drive(course) { motion.pose(at: $0) }
         #expect(s.isFinished)
         #expect(s.results.allSatisfy { !$0.timedOut })
-        #expect(s.results.allSatisfy { $0.held >= $0.move.holdSeconds })
+        #expect(s.results.allSatisfy { $0.held >= $0.holdTarget })
         #expect(s.score >= 90)
         #expect(s.summary(date: "2026-11-10").grade == .calm)
     }
@@ -119,8 +150,8 @@ struct StretchSessionTests {
         let s = drive(course) { motion.pose(at: $0) }
         #expect(s.range.tiltRight >= 22)
         #expect(s.range.tiltLeft >= 22)
-        #expect(s.range.down >= 20)
-        #expect(s.range.turnRight >= 28)
+        #expect(s.range.down >= 12)
+        #expect(s.range.turnRight >= 20)
     }
 
     @Test func circlesFlowWithoutReturningToCenter() {
@@ -131,13 +162,13 @@ struct StretchSessionTests {
         #expect(s.results.allSatisfy { !$0.timedOut })
     }
 
-    @Test(arguments: AngleSize.allCases)
-    func everyCourseCanBeFinishedAtEverySize(size: AngleSize) {
+    @Test(arguments: AngleSize.allCases, Leniency.allCases)
+    func everyCourseCanBeFinishedAtEverySize(size: AngleSize, leniency: Leniency) {
         for c in CourseLibrary.all {
-            let motion = ScriptedMotion(course: c, size: size)
-            let s = drive(c, size: size) { motion.pose(at: $0) }
-            #expect(s.isFinished, "\(c.id) \(size)")
-            #expect(s.score >= 80, "\(c.id) \(size) \(s.score)")
+            let motion = ScriptedMotion(course: c, size: size, leniency: leniency)
+            let s = drive(c, size: size, leniency: leniency) { motion.pose(at: $0) }
+            #expect(s.isFinished, "\(c.id) \(size) \(leniency)")
+            #expect(s.score >= 90, "\(c.id) \(size) \(leniency) \(s.score)")
         }
     }
 
@@ -146,6 +177,192 @@ struct StretchSessionTests {
         let s = motion.run(until: 16.2, course: course, size: .small)
         #expect(!s.isFinished)
         #expect(s.index >= 1)
+    }
+}
+
+/// 本人の実機の意見（2026-11-11）への直し：見失い・行きすぎ・短いぶれで、点が不当に下がらないこと
+struct LenientJudgingTests {
+    @Test func defaultIsLooseWithAShortHold() {
+        #expect(Settings().leniency == .loose)
+        #expect(Move.chinDown.holdSeconds(.loose) == 3)
+        #expect(Move.chinDown.holdSeconds(.normal) == 4)
+        #expect(Leniency.loose.enterZone < Leniency.normal.enterZone)
+        #expect(Leniency.loose.wobbleGrace >= 0.5 && Leniency.normal.wobbleGrace >= 0.5)
+    }
+
+    @Test func targetsStayInsideWhatTheCameraCanRead() {
+        // 横を向くは 20° 前後、あごを引くは −12° 前後（それより大きい分は見失いの扱いで受け止める）
+        #expect(abs(Move.turnRight.baseTarget.yaw) <= 22)
+        #expect(abs(Move.turnLeft.baseTarget.yaw) <= 22)
+        for m in Move.allCases {
+            #expect(m.baseTarget.pitch >= -12.5, "\(m)")
+            #expect(abs(m.baseTarget.yaw) <= 22, "\(m)")
+        }
+    }
+
+    @Test func cuesMatchTheSmallerMovement() {
+        for m in Move.allCases {
+            #expect(!m.cue.ja.contains("肩ごし"), "\(m)")
+            #expect(!m.cue.en.lowercased().contains("over your"), "\(m)")
+        }
+        for c in CourseLibrary.all {
+            #expect(!c.note.ja.contains("肩ごし") && !c.title.ja.contains("ふり向"), "\(c.id)")
+        }
+    }
+
+    /// あごを引くと顔が見えなくなる：目標の 0.8 倍まで読めて、その先は見失ったまま
+    @Test(arguments: Leniency.allCases)
+    func losingTheFaceNearTheTargetCountsAsAGoodStretch(leniency: Leniency) {
+        let c = one([.chinDown])
+        let target = Move.chinDown.target(.small)
+        let s = driveCamera(c, leniency: leniency, until: 30) { t in
+            if t < 3 { return .zero }
+            let x = min(1, (t - 3) / 2.5)
+            let p = target * (1.3 * x)
+            return p.length > target.length * 0.8 ? nil : p
+        }
+        #expect(s.results[0].maxProgress >= 1)
+        #expect(!s.results[0].timedOut)
+        // 見失ったまま、顔を戻さなくても保ちきれる
+        #expect(s.isFinished)
+        #expect(s.score >= 90, "\(s.score)")
+    }
+
+    @Test func aLongLossAsksForTheFaceBackWithoutTimingOut() {
+        let c = one([.turnRight])
+        var s = StretchSession(course: c, size: .small, leniency: .loose)
+        var t = 0.0
+        afterCountIn(&s, from: &t)
+        // 目標から遠いところ（0.2 倍）で見失い、40 秒もどらない
+        s.update(pose: Move.turnRight.target(.small) * 0.2, at: t)
+        while t < 45 { s.updateLost(at: t); t += 1.0 / 30 }
+        #expect(s.needsFaceBack)
+        #expect(s.results[0].held == 0)
+        #expect(!s.results[0].timedOut)
+        #expect(s.phase == .reaching)
+        // 顔が戻れば、そのまま続けられる
+        let target = Move.turnRight.target(.small)
+        while t < 52, !s.isFinished { s.update(pose: target, at: t); t += 1.0 / 30 }
+        #expect(!s.needsFaceBack)
+        #expect(s.isFinished)
+    }
+
+    @Test func aBriefLossNearTheTargetDoesNotAskForTheFace() {
+        let c = one([.turnRight])
+        var s = StretchSession(course: c, size: .small, leniency: .loose)
+        var t = 0.0
+        afterCountIn(&s, from: &t)
+        s.update(pose: Move.turnRight.target(.small) * 0.9, at: t)
+        let lostAt = t
+        while t < lostAt + 1.5 { s.updateLost(at: t); t += 1.0 / 30 }
+        #expect(s.isLost)
+        #expect(!s.needsFaceBack)
+        #expect(s.phase == .holding)
+    }
+
+    @Test(arguments: [1.5, 2.0, 2.5])
+    func goingPastTheTargetStillCounts(overshoot: Double) {
+        let c = one([.turnRight, .turnLeft, .tiltRight, .lookUp])
+        let motion = ScriptedMotion(course: c, size: .small, overshoot: overshoot)
+        let s = drive(c) { motion.pose(at: $0) }
+        #expect(s.isFinished)
+        #expect(s.results.allSatisfy { !$0.timedOut })
+        #expect(s.score >= 90, "\(overshoot) \(s.score)")
+    }
+
+    @Test func goingPastWithSomeWobbleOffAxisStillCounts() {
+        let c = one([.turnRight])
+        let target = Move.turnRight.target(.small)
+        // 目標の 1.8 倍まで向き、首が少し傾く（ずれ 10°）
+        let s = drive(c, until: 30) { t in
+            if t < 3 { return .zero }
+            let x = min(1, (t - 3) / 2.5)
+            return (target * 1.8 + HeadPose(yaw: 0, pitch: -6, roll: 8)) * x
+        }
+        #expect(s.isFinished)
+        #expect(s.score >= 90, "\(s.score)")
+    }
+
+    /// 本物のカメラのように、目標の 1.15 倍より先は見えない。大きく伸ばす人ほど見失うが、点は下がらない
+    @Test(arguments: Leniency.allCases)
+    func aCameraThatLosesBigMovesDoesNotLowerTheScore(leniency: Leniency) {
+        let c = CourseLibrary.course(id: "look-back-bird")!
+        let seen = drive(c, leniency: leniency) { ScriptedMotion(course: c, size: .small, leniency: leniency).pose(at: $0) }
+        let motion = ScriptedMotion(course: c, size: .small, overshoot: 1.5, leniency: leniency)
+        let s = driveCamera(c, leniency: leniency, pose: camera(motion, course: c, seeUpTo: 1.15))
+        #expect(s.isFinished)
+        #expect(s.results.allSatisfy { !$0.timedOut })
+        #expect(s.score >= 90, "\(leniency) \(s.score)")
+        #expect(s.score >= seen.score - 5)
+    }
+
+    @Test(arguments: Leniency.allCases)
+    func shortWobblesDoNotBreakTheHold(leniency: Leniency) {
+        let c = one([.tiltRight])
+        let target = Move.tiltRight.target(.small)
+        var s = StretchSession(course: c, size: .small, leniency: leniency)
+        var t = 0.0
+        afterCountIn(&s, from: &t)
+        // ゆっくり輪へ
+        let start = t
+        while t < start + 2.5 { s.update(pose: target * ((t - start) / 2.5), at: t); t += 1.0 / 30 }
+        var dropped = 0
+        var prev = s.phase
+        // 1 秒ごとに 0.4 秒だけ、輪の外（0.3 倍）へ落ちる
+        while t < start + 20, !s.isFinished {
+            let inDip = (t - start).truncatingRemainder(dividingBy: 1.0) < 0.4
+            s.update(pose: inDip ? target * 0.3 : target, at: t)
+            if prev == .holding, s.phase == .reaching { dropped += 1 }
+            prev = s.phase
+            t += 1.0 / 30
+        }
+        #expect(dropped == 0)
+        #expect(s.isFinished)
+        #expect(t < start + 2.5 + leniency.holdSeconds + 1.5)
+    }
+
+    @Test func aLongDipLeavesTheRing() {
+        let c = one([.tiltRight])
+        let target = Move.tiltRight.target(.small)
+        var s = StretchSession(course: c, size: .small, leniency: .loose)
+        var t = 0.0
+        afterCountIn(&s, from: &t)
+        while t < 6 { s.update(pose: target * min(1, (t - 3) / 2), at: t); t += 1.0 / 30 }
+        #expect(s.phase == .holding)
+        let dipStart = t
+        while t < dipStart + 1.2 { s.update(pose: .zero, at: t); t += 1.0 / 30 }
+        #expect(s.phase == .reaching)
+    }
+
+    @Test func comingBackAfterALossIsNotCountedAsFast() {
+        let c = one([.chinDown, .lookUp])
+        let target = Move.chinDown.target(.small)
+        var s = StretchSession(course: c, size: .small, leniency: .loose)
+        var t = 0.0
+        afterCountIn(&s, from: &t)
+        let start = t
+        while t < start + 2.5 { s.update(pose: target * ((t - start) / 2.5), at: t); t += 1.0 / 30 }
+        let lostAt = t
+        while t < lostAt + 1.0 { s.updateLost(at: t); t += 1.0 / 30 }
+        // 顔が見えたときは、見失う前と離れた向き（行きすぎていた）
+        s.update(pose: target * 1.9, at: t)
+        t += 1.0 / 30
+        s.update(pose: target * 1.9, at: t)
+        #expect(s.results[0].fastSeconds == 0)
+        #expect(s.speed < StretchSession.fastSpeed)
+    }
+
+    @Test func oldSaveDataWithoutLeniencyStillLoads() throws {
+        let old = #"{"input":"camera","size":"medium","sound":false,"haptics":true,"mirror":true,"dailyReminderHour":9}"#
+        let s = try JSONDecoder().decode(Settings.self, from: Data(old.utf8))
+        #expect(s.leniency == .loose)
+        #expect(s.size == .medium)
+        #expect(s.sound == false)
+        #expect(s.mirror)
+        #expect(s.dailyReminderHour == 9)
+        var n = s
+        n.leniency = .normal
+        #expect(try JSONDecoder().decode(Settings.self, from: JSONEncoder().encode(n)) == n)
     }
 }
 
@@ -185,7 +402,7 @@ struct CourseLibraryTests {
 
     @Test func everyCourseIsAboutAMinuteOrTwo() {
         for c in CourseLibrary.all {
-            #expect((25...150).contains(c.estimatedSeconds), "\(c.id) \(c.estimatedSeconds)")
+            #expect((20...150).contains(c.estimatedSeconds()), "\(c.id) \(c.estimatedSeconds())")
             #expect(!c.title.en.isEmpty && !c.note.en.isEmpty)
         }
     }

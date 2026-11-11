@@ -141,12 +141,12 @@
         }
       }
     },
-    "iPhone を机に立てて、首をゆっくり倒す・うなずく・ふり向く。その動きで、風船が雲の輪へ流れていきます。": {
+    "iPhone を机に立てて、首をゆっくり倒す・うなずく・横を向く。その動きで、風船が雲の輪へ流れていきます。": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Stand your iPhone on the desk, then slowly tilt, nod and turn your head. The balloon drifts with you into the cloud rings."
+            "value": "Stand your iPhone on the desk, then slowly tilt, nod and turn your head a little. The balloon drifts with you into the cloud rings."
           }
         }
       }
@@ -291,12 +291,12 @@
         }
       }
     },
-    "そのまま、5 秒": {
+    "そのまま、3 秒": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hold it, 5 seconds"
+            "value": "Hold it, 3 seconds"
           }
         }
       }
@@ -331,12 +331,12 @@
         }
       }
     },
-    "はじめは「小さめ」がおすすめです。痛いとき・しびれがあるときは、すぐにやめてください。": {
+    "はじめは「小さめ」「ゆるめ」がおすすめです。「ゆるめ」は輪が広く、3 秒保てば満ちます（「ふつう」は 4 秒）。痛いとき・しびれがあるときは、すぐにやめてください。": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Start with Small. Stop right away if you feel pain or numbness."
+            "value": "Start with Small and Relaxed. Relaxed has wider rings that fill in 3 seconds (Medium: 4). Stop right away if you feel pain or numbness."
           }
         }
       }
@@ -437,6 +437,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Slowly — the wind is stirring"
+          }
+        }
+      }
+    },
+    "ゆるめ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Relaxed"
           }
         }
       }
@@ -647,6 +657,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Last week"
+          }
+        }
+      }
+    },
+    "判定のゆるさ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ring tolerance"
           }
         }
       }
@@ -971,12 +991,12 @@
         }
       }
     },
-    "速く動かすと風が乱れて点が減ります。輪の中で 5 秒保つと、輪が満ちます。痛いときは、すぐにやめてください。": {
+    "速く動かすと風が乱れて点が減ります。輪の中で 3 秒保つと、輪が満ちます。痛いときは、すぐにやめてください。": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fast moves stir up the wind and cost points. Hold inside a ring for 5 seconds to fill it. Stop right away if anything hurts."
+            "value": "Fast moves stir up the wind and cost points. Hold inside a ring for 3 seconds to fill it. Stop right away if anything hurts."
           }
         }
       }
@@ -1061,16 +1081,6 @@
         }
       }
     },
-    "顔が見えません。iPhone を目の高さに立ててください": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Can't see your face. Stand your iPhone at eye level"
-          }
-        }
-      }
-    },
     "顔の向きは iPhone の中だけで計算し、映像は保存も送信もしません。カメラを使わず、傾けたり指でなぞったりしても遊べます。": {
       "localizations": {
         "en": {
@@ -1097,6 +1107,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "The camera is used only to read your head angle (video is never saved or sent). Without it, you can play the same course by tilting your iPhone or dragging with your finger."
+          }
+        }
+      }
+    },
+    "顔を画面にもどしてください（iPhone は目の高さに）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bring your face back into view (iPhone at eye level)"
           }
         }
       }

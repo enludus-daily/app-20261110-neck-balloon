@@ -81,12 +81,12 @@ struct OnboardingView: View {
         case 0:
             Caption("Neck Balloon", color: Theme.skyDeep)
             Text("首で、風船を運ぶ。").font(Theme.serif(32, .medium)).kerning(-0.5).foregroundStyle(Theme.ink)
-            Text("iPhone を机に立てて、首をゆっくり倒す・うなずく・ふり向く。その動きで、風船が雲の輪へ流れていきます。")
+            Text("iPhone を机に立てて、首をゆっくり倒す・うなずく・横を向く。その動きで、風船が雲の輪へ流れていきます。")
                 .font(Theme.text(15)).foregroundStyle(Theme.ink.opacity(0.8)).fixedSize(horizontal: false, vertical: true)
         case 1:
             Caption("Slow & wide", color: Theme.skyDeep)
             Text("ゆっくり、大きく、保つ。").font(Theme.serif(32, .medium)).kerning(-0.5).foregroundStyle(Theme.ink)
-            Text("速く動かすと風が乱れて点が減ります。輪の中で 5 秒保つと、輪が満ちます。痛いときは、すぐにやめてください。")
+            Text("速く動かすと風が乱れて点が減ります。輪の中で 3 秒保つと、輪が満ちます。痛いときは、すぐにやめてください。")
                 .font(Theme.text(15)).foregroundStyle(Theme.ink.opacity(0.8)).fixedSize(horizontal: false, vertical: true)
         default:
             Caption("Privacy", color: Theme.skyDeep)
@@ -141,7 +141,7 @@ struct OnboardingView: View {
                     .frame(height: h * 0.52)
                     .position(x: cx + (ringX - cx) * ease, y: h * 0.42 + h * 0.08)
                 if page == 1 {
-                    Text("そのまま、5 秒")
+                    Text("そのまま、3 秒")
                         .font(Theme.serif(15).italic())
                         .foregroundStyle(Theme.ink.opacity(0.7))
                         .position(x: w / 2, y: h * 0.9)

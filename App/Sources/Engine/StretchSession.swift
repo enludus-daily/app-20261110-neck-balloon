@@ -36,6 +36,8 @@ struct NeckRange: Equatable, Sendable, Codable {
 /// 1 つの動きの結果
 struct StepResult: Equatable, Sendable, Codable {
     let move: Move
+    /// 保つ秒数（判定のゆるさで変わる）
+    var holdTarget: Double
     /// いちばん深く届いた割合（1 で輪のまんなか。1 を超えると大きく伸ばせた）
     var maxProgress: Double = 0
     /// 輪の中で保った秒数
@@ -45,10 +47,16 @@ struct StepResult: Equatable, Sendable, Codable {
     /// 時間切れで次へ進んだ
     var timedOut = false
 
-    /// 0〜100。届いた深さ 40・保った長さ 30・ゆっくり 30
+    init(move: Move, holdTarget: Double) {
+        self.move = move
+        self.holdTarget = holdTarget
+    }
+
+    /// 0〜100。届いた深さ 40・保った長さ 30・ゆっくり 30。
+    /// 深さは目標の角度（1）で満点。行きすぎても減らさない
     var score: Int {
-        let reach = min(1, maxProgress / 1.1)
-        let hold = min(1, held / move.holdSeconds)
+        let reach = max(0, min(1, maxProgress))
+        let hold = min(1, held / max(0.1, holdTarget))
         let smooth = max(0, 1 - fastSeconds / 1.5)
         return Int((100 * (0.4 * reach + 0.3 * hold + 0.3 * smooth)).rounded())
     }
@@ -69,9 +77,6 @@ struct StretchSession: Sendable {
         case finished
     }
 
-    /// 輪に入ったとみなす割合と、出たとみなす割合（行ったり来たりでちらつかないように差をつける）
-    static let enterZone = 0.85
-    static let leaveZone = 0.72
     /// 戻ったとみなす割合
     static let neutralZone = 0.3
     /// これより速いと風が乱れる（度/秒）
@@ -80,8 +85,12 @@ struct StretchSession: Sendable {
     static let stepTimeout = 20.0
     static let countInSeconds = 3.0
 
+    /// 顔を見失ったときに「行きすぎ」とみなす、最後に読めた割合（ここより目標の側で見失ったら、よく伸びている）
+    static let lostCarryFrom = 0.5
+
     let course: Course
     let size: AngleSize
+    let leniency: Leniency
     private(set) var phase: Phase = .countIn
     private(set) var index = 0
     private(set) var results: [StepResult]
@@ -97,11 +106,20 @@ struct StretchSession: Sendable {
     private(set) var stepStart: Double = 0
     private var lastTime: Double?
     private var lastPose: HeadPose?
+    /// 輪から少しはみ出した時刻（短いぶれなら「保つ」を続ける）
+    private var outSince: Double?
+    /// 顔を見失った時刻（見えている間は nil）
+    private(set) var lostSince: Double?
+    /// 見失ったのが目標へ向かう途中・目標の近くだった（＝行きすぎ。最後の向きのまま数える）
+    private(set) var lostWhileReaching = false
+    /// 最後の時刻
+    private(set) var now: Double = 0
 
-    init(course: Course, size: AngleSize) {
+    init(course: Course, size: AngleSize, leniency: Leniency = .loose) {
         self.course = course
         self.size = size
-        self.results = course.moves.map { StepResult(move: $0) }
+        self.leniency = leniency
+        self.results = course.moves.map { StepResult(move: $0, holdTarget: $0.holdSeconds(leniency)) }
     }
 
     var move: Move? { index < course.moves.count ? course.moves[index] : nil }
@@ -113,8 +131,21 @@ struct StretchSession: Sendable {
 
     /// 今の動きで保った割合（0〜1。輪が満ちていく）
     var holdFraction: Double {
-        guard let m = move, index < results.count else { return 0 }
-        return min(1, results[index].held / m.holdSeconds)
+        guard move != nil, index < results.count else { return 0 }
+        return min(1, results[index].held / max(0.1, results[index].holdTarget))
+    }
+
+    /// 今の動きで保つ秒数
+    var holdTarget: Double { index < results.count ? results[index].holdTarget : 0 }
+
+    /// 顔が見えない
+    var isLost: Bool { lostSince != nil }
+
+    /// 顔を見失ったまま、行きすぎとしても数えられないとき（「顔を画面にもどして」と静かに案内する）
+    var needsFaceBack: Bool {
+        guard let since = lostSince else { return false }
+        if phase == .countIn || phase == .finished { return true }
+        return !lostWhileReaching || now - since > leniency.lostGrace
     }
 
     /// 全体の点（0〜100。終わった動きの平均）
@@ -148,13 +179,17 @@ struct StretchSession: Sendable {
     mutating func update(pose newPose: HeadPose, at t: Double) {
         if startTime == nil { startTime = t }
         let dt = lastTime.map { max(0, min(0.25, t - $0)) } ?? 0
+        // 見失ったあとの最初の向きは、見失う前と比べない（戻ってきた分を「速すぎ」にしない）
         if let lp = lastPose, dt > 0 {
             let instant = (newPose - lp).length / dt
             speed = speed * 0.6 + instant * 0.4
         }
         lastTime = t
+        now = t
         lastPose = newPose
         pose = newPose
+        lostSince = nil
+        lostWhileReaching = false
 
         switch phase {
         case .finished:
@@ -180,15 +215,30 @@ struct StretchSession: Sendable {
         case .reaching, .holding:
             results[index].maxProgress = max(results[index].maxProgress, along)
             if fast { results[index].fastSeconds += dt }
-            if phase == .reaching, along >= Self.enterZone, off < 0.6 {
+            // 行きすぎは輪の中（上限で弾かない）。行きすぎた分だけ、中心からのずれも広く許す
+            let offRatio = off / max(1, along)
+            let inside = along >= leniency.enterZone && offRatio < leniency.enterOff
+            let stillInside = along >= leniency.leaveZone && offRatio < leniency.leaveOff
+            if phase == .reaching, inside {
                 phase = .holding
-            } else if phase == .holding, along < Self.leaveZone || off >= 0.75 {
-                phase = .reaching
+                outSince = nil
+            } else if phase == .holding {
+                if stillInside {
+                    outSince = nil
+                } else if let o = outSince {
+                    // 短いぶれ（wobbleGrace 以内）では「保つ」を途切れさせない
+                    if t - o > leniency.wobbleGrace {
+                        phase = .reaching
+                        outSince = nil
+                    }
+                } else {
+                    outSince = t
+                }
             }
             if phase == .holding {
                 // 速く動いている間は、保った時間に数えない
                 if !fast { results[index].held += dt }
-                if results[index].held >= m.holdSeconds { completeStep(at: t) }
+                if results[index].held >= results[index].holdTarget { completeStep(at: t) }
             } else if t - stepStart >= Self.stepTimeout {
                 results[index].timedOut = true
                 completeStep(at: t)
@@ -205,7 +255,54 @@ struct StretchSession: Sendable {
         }
     }
 
+    /// 顔が見えないとき（カメラが顔を見失った）に、時間だけを進める（t は秒）。
+    /// 目標へ向かう途中・目標の近くで見失ったら、カメラが読めないほど大きく伸ばした（行きすぎ）とみなし、
+    /// 最後に読めた向きのまま、`leniency.lostGrace` 秒までは「保つ」を数える。
+    /// それより長い・目標から遠いところで見失ったときは、数えも時間切れも止めて待つ（責めない）。
+    mutating func updateLost(at t: Double) {
+        guard let start = startTime else { return }
+        let dt = lastTime.map { max(0, min(0.25, t - $0)) } ?? 0
+        lastTime = t
+        now = t
+        // 次に顔が見えたとき、見失う前の向きと比べて「速すぎ」にしない
+        lastPose = nil
+        speed *= 0.6
+        if lostSince == nil {
+            lostSince = t
+            lostWhileReaching = (phase == .reaching || phase == .holding) && progress >= Self.lostCarryFrom
+        }
+
+        switch phase {
+        case .finished, .returning:
+            return
+        case .countIn:
+            if t - start >= Self.countInSeconds {
+                phase = .reaching
+                stepStart = t
+            }
+            return
+        case .reaching, .holding:
+            break
+        }
+        guard index < results.count else { phase = .finished; return }
+        let since = lostSince ?? t
+        if lostWhileReaching, t - since <= leniency.lostGrace {
+            // 行きすぎ：深さは満点、輪の中で保っているとみなす
+            results[index].maxProgress = max(results[index].maxProgress, 1)
+            if phase == .reaching { phase = .holding }
+            outSince = nil
+            results[index].held += dt
+            if results[index].held >= results[index].holdTarget { completeStep(at: t) }
+        } else {
+            if phase == .holding { phase = .reaching }
+            outSince = nil
+            // 見えない間は時間切れへ進めない
+            stepStart += dt
+        }
+    }
+
     private mutating func completeStep(at t: Double) {
+        outSince = nil
         index += 1
         if index >= course.moves.count {
             phase = .finished

@@ -21,9 +21,13 @@ struct SettingsView: View {
                         Text("ふつう").tag(AngleSize.medium)
                         Text("大きめ").tag(AngleSize.large)
                     } label: { Text("動かす角度") }
+                    Picker(selection: $app.progress.settings.leniency) {
+                        Text("ゆるめ").tag(Leniency.loose)
+                        Text("ふつう").tag(Leniency.normal)
+                    } label: { Text("判定のゆるさ") }
                     Toggle(isOn: $app.progress.settings.mirror) { Text("左右を入れ替える（カメラ）") }
                 } header: { Text("遊び方") } footer: {
-                    Text("はじめは「小さめ」がおすすめです。痛いとき・しびれがあるときは、すぐにやめてください。")
+                    Text("はじめは「小さめ」「ゆるめ」がおすすめです。「ゆるめ」は輪が広く、3 秒保てば満ちます（「ふつう」は 4 秒）。痛いとき・しびれがあるときは、すぐにやめてください。")
                 }
 
                 Section {

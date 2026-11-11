@@ -49,6 +49,28 @@ struct Settings: Equatable, Sendable, Codable {
     var dailyReminderHour: Int?
     /// Pro：仕事中の 1 時間ごと（平日）
     var workReminder: WorkReminder?
+    /// 判定のゆるさ（既定はゆるめ。2026-11-11 に足した）
+    var leniency: Leniency = .loose
+
+    init() {}
+
+    private enum CodingKeys: String, CodingKey {
+        case input, size, sound, haptics, mirror, dailyReminderHour, workReminder, leniency
+    }
+
+    /// 前の版で保存した記録（leniency がない）も読めるように、ない項目は既定の値にする
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let d = Settings()
+        input = try c.decodeIfPresent(InputMode.self, forKey: .input) ?? d.input
+        size = try c.decodeIfPresent(AngleSize.self, forKey: .size) ?? d.size
+        sound = try c.decodeIfPresent(Bool.self, forKey: .sound) ?? d.sound
+        haptics = try c.decodeIfPresent(Bool.self, forKey: .haptics) ?? d.haptics
+        mirror = try c.decodeIfPresent(Bool.self, forKey: .mirror) ?? d.mirror
+        dailyReminderHour = try c.decodeIfPresent(Int.self, forKey: .dailyReminderHour)
+        workReminder = try c.decodeIfPresent(WorkReminder.self, forKey: .workReminder)
+        leniency = try c.decodeIfPresent(Leniency.self, forKey: .leniency) ?? d.leniency
+    }
 }
 
 /// 仕事中の「1 時間ごとの 1 分」（Pro）
