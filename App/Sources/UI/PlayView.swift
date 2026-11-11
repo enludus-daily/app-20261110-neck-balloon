@@ -82,13 +82,15 @@ struct PlayView: View {
             let isArc = shownMove?.isArc ?? false
             let dir = shownMove?.screenDirection ?? (x: 0.0, y: 1.0)
             // 道の長さ。回すは画面のまんなかを中心に円をえがくので短め
-            let r = min(w, h) * (isArc ? 0.3 : 0.36)
+            let r = min(w, h) * (isArc ? 0.3 : 0.42)
             // 戻る場所（まっすぐの向き）。回す以外は、道のまんなかが画面のまんなかに来るように、輪と反対へ半分ずらす
             // （風船が端に寄って、画面の片側だけが空く、をなくす。#15）
             let c = isArc ? CGPoint(x: w / 2, y: h / 2) : CGPoint(x: w / 2 - dir.x * r / 2, y: h / 2 + dir.y * r / 2)
             let ringPos = CGPoint(x: c.x + dir.x * r, y: c.y - dir.y * r)
-            // 輪は風船よりひと回り大きく、風船がすっぽり入る
-            let ringSize = r * 1.4
+            // 輪は風船よりひと回り大きく、風船がすっぽり入る。道の長さに対しては小さくして、
+            // 向かい始めの風船と輪のあいだに空きを残す（今の角度と目標の差が、距離で見える）
+            let ringSize = r * (isArc ? 1.1 : 0.95)
+            let balloonHeight = ringSize * 0.82
             let along = max(-0.35, min(1.25, shownProgress))
             // ずれ：輪の中心からはずれた分を、進む向きと直角に。速すぎると風で揺れる
             let wobble = reduceMotion ? 0 : sin(play.now * 23) * s.gust * r * 0.12
@@ -114,13 +116,13 @@ struct PlayView: View {
                             p.move(to: c)
                             p.addLine(to: ringPos)
                         }
-                        .stroke(Color.white.opacity(0.5), style: StrokeStyle(lineWidth: r * 0.5, lineCap: .round))
+                        .stroke(Color.white.opacity(0.5), style: StrokeStyle(lineWidth: r * 0.3, lineCap: .round))
                         if s.phase != .returning {
                             Path { p in
                                 p.move(to: c)
                                 p.addLine(to: CGPoint(x: c.x + dir.x * r * reached, y: c.y - dir.y * r * reached))
                             }
-                            .stroke(Theme.sky.opacity(0.45), style: StrokeStyle(lineWidth: r * 0.5, lineCap: .round))
+                            .stroke(Theme.sky.opacity(0.45), style: StrokeStyle(lineWidth: r * 0.3, lineCap: .round))
                         }
                         // 道の中心の細い点線と、行き先の向きの小さな矢じり
                         Path { p in
@@ -158,8 +160,8 @@ struct PlayView: View {
                 // まんなかの印（戻る場所）
                 Circle().stroke(Theme.ink.opacity(0.22), lineWidth: 1).frame(width: 12, height: 12).position(c)
                 Balloon(tilt: .degrees(max(-30, min(30, s.pose.roll * 0.7))), glow: s.phase == .holding ? s.holdFraction : 0)
-                    .frame(height: r * 1.15)
-                    .position(x: bx, y: by + r * 0.15)
+                    .frame(height: balloonHeight)
+                    .position(x: bx, y: by + balloonHeight * 0.13)
                     .animation(reduceMotion ? nil : .interactiveSpring(response: 0.25, dampingFraction: 0.85), value: bx)
             }
             .contentShape(Rectangle())
