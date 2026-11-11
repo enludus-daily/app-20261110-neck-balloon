@@ -79,10 +79,16 @@ struct PlayView: View {
     private var stage: some View {
         GeometryReader { geo in
             let w = geo.size.width, h = geo.size.height
-            let c = CGPoint(x: w / 2, y: h / 2)
-            let r = min(w, h) * 0.3
+            let isArc = shownMove?.isArc ?? false
             let dir = shownMove?.screenDirection ?? (x: 0.0, y: 1.0)
+            // 道の長さ。回すは画面のまんなかを中心に円をえがくので短め
+            let r = min(w, h) * (isArc ? 0.3 : 0.36)
+            // 戻る場所（まっすぐの向き）。回す以外は、道のまんなかが画面のまんなかに来るように、輪と反対へ半分ずらす
+            // （風船が端に寄って、画面の片側だけが空く、をなくす。#15）
+            let c = isArc ? CGPoint(x: w / 2, y: h / 2) : CGPoint(x: w / 2 - dir.x * r / 2, y: h / 2 + dir.y * r / 2)
             let ringPos = CGPoint(x: c.x + dir.x * r, y: c.y - dir.y * r)
+            // 輪は風船よりひと回り大きく、風船がすっぽり入る
+            let ringSize = r * 1.4
             let along = max(-0.35, min(1.25, shownProgress))
             // ずれ：輪の中心からはずれた分を、進む向きと直角に。速すぎると風で揺れる
             let wobble = reduceMotion ? 0 : sin(play.now * 23) * s.gust * r * 0.12
@@ -92,17 +98,52 @@ struct PlayView: View {
             let by = c.y - dir.y * r * along - perp.y * side
             let completeAge = play.now - play.completedAt
             let enterAge = play.now - play.enteredAt
+            let reached = max(0, min(1, along))
             ZStack {
                 if let m = shownMove {
                     let fill = s.phase == .returning ? 1 : s.holdFraction
-                    // まんなかから輪への、細い点線の道
-                    Path { p in
-                        p.move(to: c)
-                        p.addLine(to: ringPos)
+                    if m.isArc {
+                        // 回す：円の道を薄く
+                        Circle()
+                            .stroke(Color.white.opacity(0.7), style: StrokeStyle(lineWidth: 1, dash: [2, 5]))
+                            .frame(width: r * 2, height: r * 2)
+                            .position(c)
+                    } else {
+                        // 「ここまで倒す」の道：太く淡い帯。今の角度まで色がのびて、目標との差が形で分かる
+                        Path { p in
+                            p.move(to: c)
+                            p.addLine(to: ringPos)
+                        }
+                        .stroke(Color.white.opacity(0.5), style: StrokeStyle(lineWidth: r * 0.5, lineCap: .round))
+                        if s.phase != .returning {
+                            Path { p in
+                                p.move(to: c)
+                                p.addLine(to: CGPoint(x: c.x + dir.x * r * reached, y: c.y - dir.y * r * reached))
+                            }
+                            .stroke(Theme.sky.opacity(0.45), style: StrokeStyle(lineWidth: r * 0.5, lineCap: .round))
+                        }
+                        // 道の中心の細い点線と、行き先の向きの小さな矢じり
+                        Path { p in
+                            p.move(to: c)
+                            p.addLine(to: ringPos)
+                        }
+                        .stroke(Theme.skyDeep.opacity(0.4), style: StrokeStyle(lineWidth: 1, dash: [2, 6]))
+                        Chevron()
+                            .stroke(Theme.skyDeep.opacity(0.45), style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round))
+                            .frame(width: r * 0.12, height: r * 0.12)
+                            .rotationEffect(.radians(atan2(-dir.y, dir.x)))
+                            .position(x: c.x + dir.x * r * 0.5, y: c.y - dir.y * r * 0.5)
+                            .opacity(s.phase == .reaching && along < 0.45 ? 1 : 0)
                     }
-                    .stroke(Theme.skyDeep.opacity(0.35), style: StrokeStyle(lineWidth: 1, dash: [2, 6]))
+                    // 目標：淡い面と細い線の的。その上に雲の輪
+                    Circle()
+                        .fill(Color.white.opacity(s.phase == .holding ? 0.55 : 0.4))
+                        .overlay(Circle().stroke(Theme.skyDeep.opacity(0.45), lineWidth: Theme.hairline))
+                        .frame(width: ringSize * 0.74, height: ringSize * 0.74)
+                        .position(ringPos)
+                        .opacity(s.phase == .returning ? 0.5 : 1)
                     CloudRing(fill: fill, active: s.phase != .returning)
-                        .frame(width: r * 1.15)
+                        .frame(width: ringSize)
                         .scaleEffect(reduceMotion || enterAge > 0.4 ? 1 : 1 + 0.08 * (1 - enterAge / 0.4))
                         .position(ringPos)
                         .opacity(s.phase == .returning ? 0.55 : 1)
@@ -110,19 +151,12 @@ struct PlayView: View {
                         let q = completeAge / 0.7
                         Circle()
                             .stroke(Theme.peachDeep.opacity(0.6 * (1 - q)), lineWidth: 2)
-                            .frame(width: r * (1.2 + 0.6 * q))
+                            .frame(width: ringSize * (1.05 + 0.5 * q))
                             .position(ringPos)
-                    }
-                    if m.isArc {
-                        // 回す：円の道を薄く
-                        Circle()
-                            .stroke(Color.white.opacity(0.7), style: StrokeStyle(lineWidth: 1, dash: [2, 5]))
-                            .frame(width: r * 2, height: r * 2)
-                            .position(c)
                     }
                 }
                 // まんなかの印（戻る場所）
-                Circle().stroke(Theme.ink.opacity(0.18), lineWidth: 1).frame(width: 10, height: 10).position(c)
+                Circle().stroke(Theme.ink.opacity(0.22), lineWidth: 1).frame(width: 12, height: 12).position(c)
                 Balloon(tilt: .degrees(max(-30, min(30, s.pose.roll * 0.7))), glow: s.phase == .holding ? s.holdFraction : 0)
                     .frame(height: r * 1.15)
                     .position(x: bx, y: by + r * 0.15)
@@ -273,5 +307,16 @@ struct PlayView: View {
         .background(RoundedRectangle(cornerRadius: Theme.rLarge, style: .continuous).fill(Theme.paper))
         .shadow(color: Theme.shadow, radius: 16, y: 6)
         .padding(24)
+    }
+}
+
+/// 行き先を指す小さな矢じり（右向き。回して使う）
+private struct Chevron: Shape {
+    func path(in rect: CGRect) -> Path {
+        var p = Path()
+        p.move(to: CGPoint(x: rect.minX + rect.width * 0.3, y: rect.minY))
+        p.addLine(to: CGPoint(x: rect.maxX - rect.width * 0.2, y: rect.midY))
+        p.addLine(to: CGPoint(x: rect.minX + rect.width * 0.3, y: rect.maxY))
+        return p
     }
 }

@@ -4,6 +4,7 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.locale) private var locale
     @State private var reminderOn = false
     @State private var reminderHour = 15
     @State private var workOn = false
@@ -22,8 +23,7 @@ struct SettingsView: View {
                         Text("大きめ").tag(AngleSize.large)
                     } label: { Text("動かす角度") }
                     Picker(selection: $app.progress.settings.leniency) {
-                        Text("ゆるめ").tag(Leniency.loose)
-                        Text("ふつう").tag(Leniency.normal)
+                        ForEach(Leniency.allCases, id: \.self) { l in Text(verbatim: l.name.text(locale)).tag(l) }
                     } label: { Text("判定のゆるさ") }
                     Toggle(isOn: $app.progress.settings.mirror) { Text("左右を入れ替える（カメラ）") }
                 } header: { Text("遊び方") } footer: {

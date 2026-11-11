@@ -32,6 +32,14 @@ enum AngleSize: String, Codable, CaseIterable, Sendable {
 enum Leniency: String, Codable, CaseIterable, Sendable {
     case loose, normal
 
+    /// 設定に出す名前（角度の「ふつう＝Medium」と英語で分けるため、ここで持つ）
+    var name: Phrase {
+        switch self {
+        case .loose: Phrase("ゆるめ", "Relaxed")
+        case .normal: Phrase("ふつう", "Standard")
+        }
+    }
+
     /// 輪に入ったとみなす割合（1 で目標の角度）
     var enterZone: Double {
         switch self {

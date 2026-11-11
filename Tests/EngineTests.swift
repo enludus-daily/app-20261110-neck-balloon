@@ -174,9 +174,11 @@ struct StretchSessionTests {
 
     @Test func scriptedRunStopsInTheMiddleForScreenshots() {
         let motion = ScriptedMotion(course: course, size: .small)
-        let s = motion.run(until: 16.2, course: course, size: .small)
+        let s = motion.run(until: 13.0, course: course, size: .small)
         #expect(!s.isFinished)
-        #expect(s.index >= 1)
+        #expect(s.index == 1)
+        #expect(s.phase == .reaching)
+        #expect((0.3...0.7).contains(s.progress))
     }
 }
 

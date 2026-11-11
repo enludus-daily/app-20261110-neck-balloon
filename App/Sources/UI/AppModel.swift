@@ -190,8 +190,8 @@ final class AppModel {
         case "play":
             let c = CourseLibrary.free[3]
             let motion = ScriptedMotion(course: c, size: .small)
-            // 2 つ目の動き（左に倒す）を輪の中で保っている途中
-            let session = motion.run(until: 16.2, course: c, size: .small)
+            // 2 つ目の動き（左に倒す）で、輪へ半分ほど向かっている途中（道の帯が今の角度までのびている）
+            let session = motion.run(until: 13.0, course: c, size: .small)
             play = PlayModel(frozen: session)
             route = .play
         case "result":

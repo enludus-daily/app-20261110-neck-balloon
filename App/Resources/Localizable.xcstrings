@@ -296,7 +296,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hold it, 3 seconds"
+            "value": "Hold for 3 seconds"
           }
         }
       }
@@ -336,7 +336,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Start with Small and Relaxed. Relaxed has wider rings that fill in 3 seconds (Medium: 4). Stop right away if you feel pain or numbness."
+            "value": "Start with Small and Relaxed. Relaxed has wider rings that fill in 3 seconds (Standard: 4). Stop right away if you feel pain or numbness."
           }
         }
       }
@@ -437,16 +437,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Slowly — the wind is stirring"
-          }
-        }
-      }
-    },
-    "ゆるめ": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Relaxed"
           }
         }
       }
@@ -816,7 +806,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Play with finger"
+            "value": "Play with your finger"
           }
         }
       }
@@ -1126,7 +1116,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seconds of wind"
+            "value": "Gusty seconds"
           }
         }
       }
