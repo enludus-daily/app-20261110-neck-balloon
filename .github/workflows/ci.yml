@@ -12,9 +12,9 @@ concurrency:
   cancel-in-progress: true
 jobs:
   ci:
-    uses: enludus-daily/daily-actions/.github/workflows/ios-ci.yml@1065caf75ae93254ba41ca35eb0bc8ef0dfe81ba # daily-actions 2026-11-05-fixed-signing-cert
+    uses: enludus-daily/daily-actions/.github/workflows/ios-ci.yml@610dc0070c3402b161e2d4bc843ed1179b8a91d1 # daily-actions 2026-11-11-demo-display
     with:
-      actions-sha: 1065caf75ae93254ba41ca35eb0bc8ef0dfe81ba
+      actions-sha: 610dc0070c3402b161e2d4bc843ed1179b8a91d1
       scheme: NeckBalloon
       # iPhone Duo の全画面の表示には Xcode 27.1（iOS 27.1 SDK）が要る（Apple Tech Talk「Prepare your app for iPhone Duo」）。
       # xcode-27 ランナーは GitHub で Preview 扱い（actions/runner-images #14404）。
@@ -25,6 +25,8 @@ jobs:
       # 撮る画面（アプリが起動引数 -screenshotScene <名前> で開く画面。@dark でダークモード）。手順書 9.5
       # en- で始まる名前は、アプリが英語の画面で開く（固定した SHA の CI は @en を知らないため、アプリの側で切り替える）
       screenshot-scenes: launch home play result courses records settings pro permission en-home en-play en-result onboarding
+      # YouTube の「AI ships an app a day」Day 3 用：起動引数 -demo の再生を英語で録る（artifact demo-video）
+      demo-video: en
       # Duo の内側の画面（display3）を撮るため、開いた姿勢にしてから撮る（simctl ui posture がある Xcode でだけ効く）
       screenshot-posture: open
       guard-disabled: ${{ vars.DAILY_GUARD_DISABLED == 'true' && 'true' || 'false' }}
