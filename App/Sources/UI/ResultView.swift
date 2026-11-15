@@ -66,25 +66,32 @@ struct ResultView: View {
     private var scoreBlock: some View {
         VStack(spacing: 4) {
             Text(verbatim: course?.title.text(locale) ?? "")
-                .font(Theme.text(14, .bold)).foregroundStyle(Theme.palette(sky).onSkySoft)
+                .font(Theme.text(15, .heavy)).foregroundStyle(Theme.palette(sky).onSky)
+                .onSkyText(sky)
             ZStack {
-                // 満ちた輪の中に点数（輪は保った 1 回 1 回のしるし）
-                CloudRing(fill: 1).frame(width: 230)
+                // 満ちた輪の中に、水彩紙の丸と点数（輪は保った 1 回 1 回のしるし）
+                CloudRing(fill: 1).frame(width: 240)
+                Circle().fill(Theme.palette(sky).paper).frame(width: 128, height: 128)
+                    .shadow(color: Theme.palette(sky).top.opacity(0.25), radius: 8, y: 3)
                 Text(verbatim: "\(shown)")
-                    .font(Theme.display(84, .heavy))
+                    .font(Theme.display(shown >= 100 ? 54 : 62, .heavy))
                     .monospacedDigit()
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.ink)
                     .contentTransition(.numericText())
             }
-            Text(summary.grade.title.text(locale))
-                .font(Theme.display(28, .heavy))
-                .foregroundStyle(Theme.gold)
-            Text(summary.grade.note.text(locale))
-                .font(Theme.text(15, .medium))
-                .foregroundStyle(.white.opacity(0.9))
-                .multilineTextAlignment(.center)
+            VStack(spacing: 4) {
+                Text(summary.grade.title.text(locale))
+                    .font(Theme.display(26, .heavy))
+                    .foregroundStyle(Theme.balloonDeep)
+                Text(summary.grade.note.text(locale))
+                    .font(Theme.text(14, .medium))
+                    .foregroundStyle(Theme.ink.opacity(0.8))
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, 20).padding(.vertical, 12)
+            .background(PaperBack(seed: 9, radius: Theme.rLarge))
         }
-        .onSkyText(sky)
         .accessibilityElement(children: .combine)
     }
 
