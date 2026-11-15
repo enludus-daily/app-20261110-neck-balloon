@@ -10,10 +10,12 @@ struct PlayView: View {
     let play: PlayModel
 
     private var s: StretchSession { play.session }
+    private var palette: SkyPalette { Theme.palette(s.course.sky) }
 
     var body: some View {
         ZStack {
             SkyBackdrop(sky: s.course.sky, drift: s.courseProgress)
+                .equatable()
             if hSize == .regular {
                 HStack(spacing: 24) {
                     VStack(spacing: 0) {
@@ -36,6 +38,7 @@ struct PlayView: View {
             }
             overlays
         }
+        .environment(\.skyTime, s.course.sky)
     }
 
     // MARK: 上
@@ -44,21 +47,23 @@ struct PlayView: View {
         HStack(spacing: 14) {
             Button { app.quit() } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(Theme.ink)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(.white)
                     .frame(width: 40, height: 40)
-                    .background(Circle().fill(.white.opacity(0.75)))
+                    .background(Circle().fill(.white.opacity(0.18)))
+                    .overlay(Circle().stroke(.white.opacity(0.6), lineWidth: 1))
             }
             .accessibilityLabel(Text("やめる"))
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    Capsule().fill(.white.opacity(0.6))
-                    Capsule().fill(Theme.skyDeep).frame(width: geo.size.width * s.courseProgress)
+                    Capsule().fill(.white.opacity(0.25))
+                    Capsule().fill(Theme.gold).frame(width: geo.size.width * s.courseProgress)
                 }
             }
-            .frame(height: 3)
+            .frame(height: 6)
             Text(verbatim: "\(min(s.index + 1, s.course.moves.count)) / \(s.course.moves.count)")
-                .font(Theme.serif(15)).monospacedDigit().foregroundStyle(Theme.ink.opacity(0.7))
+                .font(Theme.display(16, .heavy)).monospacedDigit().foregroundStyle(.white)
+                .onSkyText(s.course.sky)
         }
         .padding(.top, 8)
     }
@@ -107,7 +112,7 @@ struct PlayView: View {
                     if m.isArc {
                         // 回す：円の道を薄く
                         Circle()
-                            .stroke(Color.white.opacity(0.7), style: StrokeStyle(lineWidth: 1, dash: [2, 5]))
+                            .stroke(Color.white.opacity(0.75), style: StrokeStyle(lineWidth: 2, lineCap: .round, dash: [1, 8]))
                             .frame(width: r * 2, height: r * 2)
                             .position(c)
                     } else {
@@ -116,31 +121,32 @@ struct PlayView: View {
                             p.move(to: c)
                             p.addLine(to: ringPos)
                         }
-                        .stroke(Color.white.opacity(0.5), style: StrokeStyle(lineWidth: r * 0.3, lineCap: .round))
+                        .stroke(Color.white.opacity(0.22), style: StrokeStyle(lineWidth: r * 0.3, lineCap: .round))
                         if s.phase != .returning {
                             Path { p in
                                 p.move(to: c)
                                 p.addLine(to: CGPoint(x: c.x + dir.x * r * reached, y: c.y - dir.y * r * reached))
                             }
-                            .stroke(Theme.sky.opacity(0.45), style: StrokeStyle(lineWidth: r * 0.3, lineCap: .round))
+                            .stroke(Theme.gold.opacity(0.45), style: StrokeStyle(lineWidth: r * 0.3, lineCap: .round))
+                            .blur(radius: 3)
                         }
                         // 道の中心の細い点線と、行き先の向きの小さな矢じり
                         Path { p in
                             p.move(to: c)
                             p.addLine(to: ringPos)
                         }
-                        .stroke(Theme.skyDeep.opacity(0.4), style: StrokeStyle(lineWidth: 1, dash: [2, 6]))
+                        .stroke(Color.white.opacity(0.8), style: StrokeStyle(lineWidth: 2, lineCap: .round, dash: [1, 8]))
                         Chevron()
-                            .stroke(Theme.skyDeep.opacity(0.45), style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round))
+                            .stroke(Color.white.opacity(0.85), style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                             .frame(width: r * 0.12, height: r * 0.12)
                             .rotationEffect(.radians(atan2(-dir.y, dir.x)))
                             .position(x: c.x + dir.x * r * 0.5, y: c.y - dir.y * r * 0.5)
                             .opacity(s.phase == .reaching && along < 0.45 ? 1 : 0)
                     }
-                    // 目標：淡い面と細い線の的。その上に雲の輪
+                    // 目標：にじんだ光の的。その上に水彩の雲の輪
                     Circle()
-                        .fill(Color.white.opacity(s.phase == .holding ? 0.55 : 0.4))
-                        .overlay(Circle().stroke(Theme.skyDeep.opacity(0.45), lineWidth: Theme.hairline))
+                        .fill(RadialGradient(colors: [palette.glow.opacity(s.phase == .holding ? 0.7 : 0.45), palette.glow.opacity(0)],
+                                             center: .center, startRadius: 0, endRadius: ringSize * 0.45))
                         .frame(width: ringSize * 0.74, height: ringSize * 0.74)
                         .position(ringPos)
                         .opacity(s.phase == .returning ? 0.5 : 1)
@@ -152,13 +158,13 @@ struct PlayView: View {
                     if !reduceMotion, completeAge < 0.7 {
                         let q = completeAge / 0.7
                         Circle()
-                            .stroke(Theme.peachDeep.opacity(0.6 * (1 - q)), lineWidth: 2)
+                            .stroke(Theme.gold.opacity(0.8 * (1 - q)), lineWidth: 3)
                             .frame(width: ringSize * (1.05 + 0.5 * q))
                             .position(ringPos)
                     }
                 }
                 // まんなかの印（戻る場所）
-                Circle().stroke(Theme.ink.opacity(0.22), lineWidth: 1).frame(width: 12, height: 12).position(c)
+                Circle().stroke(Color.white.opacity(0.6), lineWidth: 1.5).frame(width: 12, height: 12).position(c)
                 Balloon(tilt: .degrees(max(-30, min(30, s.pose.roll * 0.7))), glow: s.phase == .holding ? s.holdFraction : 0)
                     .frame(height: balloonHeight)
                     .position(x: bx, y: by + balloonHeight * 0.13)
@@ -182,18 +188,21 @@ struct PlayView: View {
         VStack(spacing: 6) {
             if let m = s.move ?? shownMove {
                 Text(m.cue.text(locale))
-                    .font(Theme.serif(22, .medium).italic())
+                    .font(Theme.display(22, .heavy))
                     .foregroundStyle(Theme.ink)
                     .multilineTextAlignment(.center)
                     .id(m.rawValue + "\(s.index)")
                     .transition(.opacity)
             }
             Text(phaseLine)
-                .font(Theme.text(14))
-                .foregroundStyle(s.gust > 0.4 ? Theme.peachDeep : Theme.inkSoft)
+                .font(Theme.text(14, .semibold))
+                .foregroundStyle(s.gust > 0.4 ? Theme.balloonDeep : Theme.inkSoft)
                 .monospacedDigit()
         }
-        .frame(minHeight: 70)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .frame(maxWidth: 460, minHeight: 84)
+        .background(PaperBack(seed: 4, radius: Theme.rLarge))
         .animation(.easeOut(duration: 0.25), value: s.index)
     }
 
@@ -213,31 +222,30 @@ struct PlayView: View {
     // MARK: 横（Duo の内側など広い画面）
 
     private var sidePanel: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            Caption("Your head")
+        VStack(alignment: .leading, spacing: 16) {
+            Caption("いまの首の向き")
             HeadDial(pose: s.pose)
                 .frame(width: 120, height: 120)
-                .background(Circle().fill(.white.opacity(0.55)))
-            Text(s.course.title.text(locale)).font(Theme.serif(24, .medium)).foregroundStyle(Theme.ink)
-            Caption("Next")
+            Text(s.course.title.text(locale)).font(Theme.display(24, .heavy)).foregroundStyle(Theme.ink)
+            Caption("つぎの動き")
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(Array(s.course.moves.enumerated().filter { $0.offset >= s.index && !($0.element.isArc && $0.offset > s.index) }.prefix(4)), id: \.offset) { item in
                     HStack(spacing: 8) {
                         MoveGlyph(move: item.element)
-                        Text(item.element.cue.text(locale)).font(Theme.text(13))
+                        Text(item.element.cue.text(locale)).font(Theme.text(13, item.offset == s.index ? .bold : .regular))
                             .foregroundStyle(item.offset == s.index ? Theme.ink : Theme.inkSoft)
                             .lineLimit(1)
                     }
                 }
             }
             Spacer()
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(verbatim: "\(s.score)").font(Theme.serif(40)).kerning(-2).monospacedDigit().foregroundStyle(Theme.ink)
-                Caption("score")
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text(verbatim: "\(s.score)").font(Theme.display(44, .heavy)).monospacedDigit().foregroundStyle(Theme.ink)
+                Caption("点")
             }
         }
         .padding(20)
-        .background(RoundedRectangle(cornerRadius: Theme.rLarge, style: .continuous).fill(.white.opacity(0.4)))
+        .background(PaperBack(seed: 5, radius: Theme.rLarge))
     }
 
     // MARK: 重ねる表示
@@ -247,11 +255,17 @@ struct PlayView: View {
         if s.phase == .countIn, !play.frozen {
             let n = Int(s.countdown(at: play.now).rounded(.up))
             VStack(spacing: 6) {
-                Text(verbatim: "\(max(1, n))").font(Theme.serif(80)).monospacedDigit().foregroundStyle(Theme.ink)
-                Text("肩の力をぬいて、まっすぐ前を見て").font(Theme.text(14)).foregroundStyle(Theme.inkSoft)
+                Text(verbatim: "\(max(1, n))").font(Theme.display(84, .heavy)).monospacedDigit().foregroundStyle(Theme.ink)
+                Text("肩の力をぬいて、まっすぐ前を見て").font(Theme.text(14, .medium)).foregroundStyle(Theme.inkSoft)
+                    .multilineTextAlignment(.center)
             }
+            .frame(width: 200)
             .padding(28)
-            .background(Circle().fill(.white.opacity(0.55)).frame(width: 240, height: 240))
+            .background(
+                Circle().fill(palette.paper).frame(width: 250, height: 250)
+                    .overlay(Circle().stroke(palette.wash.opacity(0.4), lineWidth: 4).blur(radius: 3).frame(width: 250, height: 250))
+                    .shadow(color: palette.top.opacity(0.3), radius: 16, y: 6)
+            )
             .allowsHitTesting(false)
         }
         switch play.sourceStatus {
@@ -265,20 +279,20 @@ struct PlayView: View {
             VStack {
                 Spacer()
                 Text("顔を画面にもどしてください（iPhone は目の高さに）")
-                    .font(Theme.text(13, .medium))
+                    .font(Theme.text(13, .bold))
                     .padding(.horizontal, 14).padding(.vertical, 8)
-                    .background(Capsule().fill(.white.opacity(0.85)))
-                    .foregroundStyle(Theme.ink)
-                    .padding(.bottom, 110)
+                    .background(Capsule().fill(palette.paper))
+                    .foregroundStyle(Theme.balloonDeep)
+                    .padding(.bottom, 120)
             }
             .allowsHitTesting(false)
         }
         if play.flippedNotice {
             VStack {
                 Text("左右を入れ替えました（設定で戻せます）")
-                    .font(Theme.text(12))
+                    .font(Theme.text(12, .semibold))
                     .padding(.horizontal, 12).padding(.vertical, 6)
-                    .background(Capsule().fill(.white.opacity(0.85)))
+                    .background(Capsule().fill(palette.paper))
                     .foregroundStyle(Theme.inkSoft)
                     .padding(.top, 60)
                 Spacer()
@@ -289,25 +303,24 @@ struct PlayView: View {
 
     private func sourceProblem(title: LocalizedStringKey) -> some View {
         VStack(spacing: 14) {
-            Text(title).font(Theme.serif(22, .medium)).foregroundStyle(Theme.ink).multilineTextAlignment(.center)
+            Text(title).font(Theme.display(22, .heavy)).foregroundStyle(Theme.ink).multilineTextAlignment(.center)
             Text("カメラを使わずに、iPhone を傾けるか、指でなぞって同じコースを遊べます。")
                 .font(Theme.text(14)).foregroundStyle(Theme.ink.opacity(0.75)).multilineTextAlignment(.center)
             Button { app.quit(); app.pendingCourse = s.course; app.switchInput(.tilt) } label: { Text("傾けて遊ぶ") }
                 .buttonStyle(PillButtonStyle())
             Button { app.quit(); app.pendingCourse = s.course; app.switchInput(.touch) } label: { Text("指で遊ぶ") }
-                .buttonStyle(LineButtonStyle())
+                .buttonStyle(LineButtonStyle(onPaper: true))
             if play.sourceStatus == .denied {
                 Button("設定でカメラを許可する") {
                     if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
                 }
-                .font(Theme.text(13))
-                .foregroundStyle(Theme.skyDeep)
+                .font(Theme.text(13, .semibold))
+                .foregroundStyle(palette.washDeep)
             }
         }
         .padding(24)
         .frame(maxWidth: 420)
-        .background(RoundedRectangle(cornerRadius: Theme.rLarge, style: .continuous).fill(Theme.paper))
-        .shadow(color: Theme.shadow, radius: 16, y: 6)
+        .background(PaperBack(seed: 6, radius: Theme.rLarge))
         .padding(24)
     }
 }

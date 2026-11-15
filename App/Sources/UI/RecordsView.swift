@@ -4,6 +4,9 @@ import SwiftUI
 struct RecordsView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.skyTime) private var sky
+
+    private var palette: SkyPalette { Theme.palette(sky) }
 
     var body: some View {
         NavigationStack {
@@ -18,10 +21,8 @@ struct RecordsView: View {
                 .frame(maxWidth: 640)
                 .frame(maxWidth: .infinity)
             }
-            .background(Theme.ground.ignoresSafeArea())
-            .navigationTitle(Text("記録"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("閉じる") { dismiss() } } }
+            .background(SkyBackdrop(sky: sky, drift: 0.7))
+            .skySheetChrome(title: "記録", sky: sky) { dismiss() }
         }
     }
 
@@ -35,25 +36,25 @@ struct RecordsView: View {
 
     private func big(_ v: String, _ label: LocalizedStringKey) -> some View {
         VStack(spacing: 2) {
-            Text(verbatim: v).font(Theme.serif(34)).kerning(-1.5).monospacedDigit().foregroundStyle(Theme.ink)
-            Text(label).font(Theme.text(11)).foregroundStyle(Theme.inkSoft)
+            Text(verbatim: v).font(Theme.display(36, .heavy)).monospacedDigit().foregroundStyle(Theme.ink)
+            Text(label).font(Theme.text(11, .semibold)).foregroundStyle(Theme.inkSoft)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
-        .background(RoundedRectangle(cornerRadius: Theme.rMedium, style: .continuous).fill(.white.opacity(0.7)))
+        .background(PaperBack(seed: Double(v.count) + 10, radius: Theme.rMedium))
     }
 
     /// 暦：遊んだ日の濃さは、その日のいちばんの点で 4 段階
     private var calendar: some View {
         let weeks = app.isPro ? 52 : 4
         let days = app.progress.lastDays(weeks * 7, today: app.today)
-        return CloudPanel {
+        return PaperPanel(seed: 11) {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Caption(app.isPro ? LocalizedStringKey("1 year") : LocalizedStringKey("4 weeks"))
+                    Caption(app.isPro ? LocalizedStringKey("この 1 年") : LocalizedStringKey("この 4 週"))
                     Spacer()
                     if !app.isPro {
-                        Button { app.sheet = .pro } label: { Text("1 年分は Pro").font(Theme.text(11)).foregroundStyle(Theme.peachDeep) }
+                        Button { app.sheet = .pro } label: { Text("1 年分は Pro").font(Theme.text(12, .bold)).foregroundStyle(Theme.balloonDeep) }
                     }
                 }
                 Canvas { ctx, size in
@@ -67,14 +68,15 @@ struct RecordsView: View {
                         let col = byWeekRows ? i % 7 : i / 7, row = byWeekRows ? i / 7 : i % 7
                         let rect = CGRect(x: CGFloat(col) * (cell + gap), y: CGFloat(row) * (cell + gap), width: cell, height: cell)
                         let score = d.record?.bestScore ?? -1
+                        // 濃さは今の空の色で 4 段階。90 点以上の日は小さな風船の朱
                         let color: Color = switch score {
-                        case 90...: Theme.skyDeep
-                        case 75..<90: Theme.sky
-                        case 55..<75: Theme.sky.opacity(0.6)
-                        case 0..<55: Theme.skySoft
-                        default: Theme.line.opacity(0.6)
+                        case 90...: Theme.balloon
+                        case 75..<90: palette.washDeep
+                        case 55..<75: palette.wash
+                        case 0..<55: palette.wash.opacity(0.45)
+                        default: Theme.line.opacity(0.7)
                         }
-                        ctx.fill(Path(roundedRect: rect, cornerRadius: cell * 0.25), with: .color(color))
+                        ctx.fill(Path(ellipseIn: rect.insetBy(dx: cell * 0.04, dy: cell * 0.04)), with: .color(color))
                     }
                 }
                 .frame(height: app.isPro ? 70 : 150)
@@ -88,14 +90,14 @@ struct RecordsView: View {
     private var rangeNow: some View {
         let week = app.progress.range(lastDays: 7, today: app.today)
         let first = app.progress.history.first?.range
-        return CloudPanel {
+        return PaperPanel(seed: 12) {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Caption("Range · 7 days")
+                    Caption("この 7 日の範囲")
                     Spacer()
                     if first != nil {
                         HStack(spacing: 4) {
-                            Rectangle().fill(Theme.peachDeep).frame(width: 10, height: 1)
+                            Rectangle().fill(Theme.balloonDeep).frame(width: 10, height: 1.5)
                             Text("はじめの日").font(Theme.text(11)).foregroundStyle(Theme.inkSoft)
                         }
                     }
@@ -119,8 +121,8 @@ struct RecordsView: View {
 
     private func cell(_ label: LocalizedStringKey, _ v: Double) -> some View {
         VStack(spacing: 2) {
-            Text(verbatim: "\(Int(v.rounded()))°").font(Theme.serif(22, .medium)).monospacedDigit().foregroundStyle(Theme.ink)
-            Text(label).font(Theme.text(11)).foregroundStyle(Theme.inkSoft)
+            Text(verbatim: "\(Int(v.rounded()))°").font(Theme.display(23, .heavy)).monospacedDigit().foregroundStyle(Theme.ink)
+            Text(label).font(Theme.text(11, .medium)).foregroundStyle(Theme.inkSoft)
         }
         .frame(maxWidth: .infinity)
     }
@@ -129,15 +131,15 @@ struct RecordsView: View {
     private var weekly: some View {
         let values = app.progress.weeklyTilt(weeks: 8, today: app.today)
         let maxV = max(1, values.max() ?? 1)
-        return CloudPanel {
+        return PaperPanel(seed: 13) {
             VStack(alignment: .leading, spacing: 10) {
-                Caption("Weekly range · 8 weeks")
+                Caption("週ごとの範囲（8 週）")
                 ZStack {
                     HStack(alignment: .bottom, spacing: 8) {
                         ForEach(Array(values.enumerated()), id: \.offset) { i, v in
                             VStack(spacing: 4) {
                                 Capsule()
-                                    .fill(i == values.count - 1 ? Theme.peach : Theme.sky)
+                                    .fill(i == values.count - 1 ? Theme.balloon : palette.wash)
                                     .frame(width: 14, height: max(4, 100 * v / maxV))
                                 Text(verbatim: v > 0 ? "\(Int(v))" : "–").font(Theme.text(9)).monospacedDigit().foregroundStyle(Theme.inkSoft)
                             }
@@ -149,10 +151,10 @@ struct RecordsView: View {
                     if !app.isPro {
                         Button { app.sheet = .pro } label: {
                             Text("週ごとの移り変わりは Pro")
-                                .font(Theme.text(13, .medium))
+                                .font(Theme.text(13, .bold))
                                 .padding(.horizontal, 14).padding(.vertical, 8)
-                                .background(Capsule().fill(.white.opacity(0.9)))
-                                .foregroundStyle(Theme.skyDeep)
+                                .background(Capsule().fill(Theme.gold))
+                                .foregroundStyle(Theme.ink)
                         }
                     }
                 }

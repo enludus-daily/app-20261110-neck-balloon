@@ -196,10 +196,10 @@ enum SkyTime: String, Codable, CaseIterable, Sendable {
 
     var name: Phrase {
         switch self {
-        case .dawn: Phrase("朝もや", "Morning mist")
-        case .noon: Phrase("昼の青", "Noon blue")
-        case .dusk: Phrase("夕なぎ", "Evening calm")
-        case .night: Phrase("夜の雲", "Night clouds")
+        case .dawn: Phrase("朝焼けの空", "Sunrise Sky")
+        case .noon: Phrase("昼の青い空", "Blue Noon Sky")
+        case .dusk: Phrase("夕暮れの空", "Dusk Sky")
+        case .night: Phrase("夜と星の空", "Starry Night Sky")
         }
     }
 }

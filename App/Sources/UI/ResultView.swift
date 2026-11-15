@@ -17,9 +17,11 @@ struct ResultView: View {
         return r.isEmpty ? nil : r
     }
 
+    private var sky: SkyTime { course?.sky ?? .noon }
+
     var body: some View {
         ZStack {
-            SkyBackdrop(sky: course?.sky ?? .noon, drift: 0.5)
+            SkyBackdrop(sky: sky, drift: 0.5)
             ScrollView {
                 VStack(spacing: 18) {
                     scoreBlock.padding(.top, 28)
@@ -38,8 +40,9 @@ struct ResultView: View {
                     Button { app.playAgain() } label: { Text("もう 1 回") }
                         .buttonStyle(PillButtonStyle())
                     Button { app.route = .home } label: { Text("ホームへ") }
-                        .font(Theme.text(15))
-                        .foregroundStyle(Theme.skyDeep)
+                        .font(Theme.text(15, .bold))
+                        .foregroundStyle(.white)
+                        .onSkyText(sky)
                         .frame(minHeight: 44)
                 }
                 .padding(.horizontal, 20)
@@ -48,6 +51,7 @@ struct ResultView: View {
                 .frame(maxWidth: .infinity)
             }
         }
+        .environment(\.skyTime, sky)
         .task {
             shareImage = renderShareImage()
             // 数字が数え上がる（0.9 秒）
@@ -60,34 +64,39 @@ struct ResultView: View {
     }
 
     private var scoreBlock: some View {
-        VStack(spacing: 6) {
-            Caption(course.map { LocalizedStringKey($0.title.text(locale)) } ?? "Result", color: Theme.skyDeep)
-            Text(verbatim: "\(shown)")
-                .font(Theme.serif(96))
-                .kerning(-4)
-                .monospacedDigit()
-                .foregroundStyle(Theme.ink)
-                .contentTransition(.numericText())
+        VStack(spacing: 4) {
+            Text(verbatim: course?.title.text(locale) ?? "")
+                .font(Theme.text(14, .bold)).foregroundStyle(Theme.palette(sky).onSkySoft)
+            ZStack {
+                // 満ちた輪の中に点数（輪は保った 1 回 1 回のしるし）
+                CloudRing(fill: 1).frame(width: 230)
+                Text(verbatim: "\(shown)")
+                    .font(Theme.display(84, .heavy))
+                    .monospacedDigit()
+                    .foregroundStyle(.white)
+                    .contentTransition(.numericText())
+            }
             Text(summary.grade.title.text(locale))
-                .font(Theme.serif(26, .medium).italic())
-                .foregroundStyle(Theme.peachDeep)
+                .font(Theme.display(28, .heavy))
+                .foregroundStyle(Theme.gold)
             Text(summary.grade.note.text(locale))
-                .font(Theme.text(14))
-                .foregroundStyle(Theme.ink.opacity(0.75))
+                .font(Theme.text(15, .medium))
+                .foregroundStyle(.white.opacity(0.9))
                 .multilineTextAlignment(.center)
         }
+        .onSkyText(sky)
         .accessibilityElement(children: .combine)
     }
 
     private var rangeBlock: some View {
-        CloudPanel {
+        PaperPanel(seed: 7) {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Caption("Range")
+                    Caption("首の動いた範囲")
                     Spacer()
                     if previousWeek != nil {
                         HStack(spacing: 4) {
-                            Rectangle().fill(Theme.peachDeep).frame(width: 10, height: 1)
+                            Rectangle().fill(Theme.balloonDeep).frame(width: 10, height: 1.5)
                             Text("先週").font(Theme.text(11)).foregroundStyle(Theme.inkSoft)
                         }
                     }
@@ -105,16 +114,16 @@ struct ResultView: View {
 
     private func angle(_ label: LocalizedStringKey, _ v: Double) -> some View {
         VStack(spacing: 2) {
-            Text(verbatim: "\(Int(v.rounded()))°").font(Theme.serif(20, .medium)).monospacedDigit().foregroundStyle(Theme.ink)
-            Text(label).font(Theme.text(11)).foregroundStyle(Theme.inkSoft)
+            Text(verbatim: "\(Int(v.rounded()))°").font(Theme.display(21, .heavy)).monospacedDigit().foregroundStyle(Theme.ink)
+            Text(label).font(Theme.text(11, .medium)).foregroundStyle(Theme.inkSoft)
         }
         .frame(maxWidth: .infinity)
     }
 
     private var statsBlock: some View {
-        CloudPanel {
+        PaperPanel(seed: 8) {
             VStack(alignment: .leading, spacing: 10) {
-                Caption("Today")
+                Caption("今日の 1 分")
                 row("ストレッチ", "\(summary.stretches)")
                 row("なぎ（90 点以上）", "\(summary.perfect)")
                 row("風が乱れた秒数", String(format: "%.1f", summary.fastSeconds))
@@ -125,18 +134,19 @@ struct ResultView: View {
 
     private func row(_ label: LocalizedStringKey, _ value: String) -> some View {
         HStack {
-            Text(label).font(Theme.text(14)).foregroundStyle(Theme.ink.opacity(0.8))
+            Text(label).font(Theme.text(14, .medium)).foregroundStyle(Theme.ink.opacity(0.8))
             Spacer()
-            Text(verbatim: value).font(Theme.serif(18, .medium)).monospacedDigit().foregroundStyle(Theme.ink)
+            Text(verbatim: value).font(Theme.display(19, .heavy)).monospacedDigit().foregroundStyle(Theme.ink)
         }
     }
 
     /// 共有カード（1080×1350）。映像や顔は入れない。風船と点数と範囲だけ
     @MainActor
     private func renderShareImage() -> Image {
-        let card = ShareCard(summary: summary, courseTitle: course?.title.text(locale) ?? "", sky: course?.sky ?? .noon,
+        let card = ShareCard(summary: summary, courseTitle: course?.title.text(locale) ?? "", sky: sky,
                              gradeTitle: summary.grade.title.text(locale))
             .environment(\.locale, locale)
+            .environment(\.skyTime, sky)
         let r = ImageRenderer(content: card)
         r.scale = 3
         if let ui = r.uiImage { return Image(uiImage: ui) }
@@ -153,14 +163,15 @@ struct ShareCard: View {
     var body: some View {
         ZStack {
             SkyBackdrop(sky: sky, drift: 0.3)
-            VStack(spacing: 10) {
-                Text(verbatim: courseTitle).font(Theme.serif(16).italic()).foregroundStyle(Theme.ink.opacity(0.7))
+            VStack(spacing: 8) {
+                Text(verbatim: courseTitle).font(Theme.text(16, .bold)).foregroundStyle(.white.opacity(0.85))
                 Balloon(tilt: .degrees(8), glow: 1).frame(height: 130)
-                Text(verbatim: "\(summary.score)").font(Theme.serif(72)).kerning(-3).foregroundStyle(Theme.ink)
-                Text(verbatim: gradeTitle).font(Theme.serif(20, .medium).italic()).foregroundStyle(Theme.peachDeep)
-                RangeFan(range: summary.range).frame(width: 200, height: 90)
-                Text(verbatim: "Neck Balloon · \(summary.date)").font(Theme.text(10)).kerning(1).foregroundStyle(Theme.inkSoft)
+                Text(verbatim: "\(summary.score)").font(Theme.display(72, .heavy)).foregroundStyle(.white)
+                Text(verbatim: gradeTitle).font(Theme.display(20, .heavy)).foregroundStyle(Theme.gold)
+                RangeFan(range: summary.range, onSky: true).frame(width: 200, height: 90)
+                Text(verbatim: "Neck Balloon · \(summary.date)").font(Theme.text(10, .semibold)).kerning(1).foregroundStyle(.white.opacity(0.75))
             }
+            .onSkyText(sky)
             .padding(24)
         }
         .frame(width: 360, height: 450)

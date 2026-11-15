@@ -54,14 +54,16 @@ final class Chimes {
         return true
     }
 
-    /// （周波数, 始まり秒, 長さ秒, 大きさ）
+    /// （周波数, 始まり秒, 長さ秒, 大きさ）。周波数 0 は「風の音」（やわらかいノイズ）
+    /// 絵本の夜空に合わせて、オルゴールのような音（ペンタトニック）。失敗は低い音ではなく、ふっと吹く風
     private static func notes(_ k: Kind) -> [(Double, Double, Double, Float)] {
         switch k {
-        case .enter: [(659.25, 0, 0.5, 0.18)]                                  // E5
-        case .complete: [(783.99, 0, 0.6, 0.16), (1046.5, 0.12, 0.8, 0.14)]  // G5 → C6
-        case .gust: [(196.0, 0, 0.35, 0.10)]                                   // G3 ひくく
-        case .finish: [(523.25, 0, 0.9, 0.14), (659.25, 0.16, 0.9, 0.13), (783.99, 0.32, 1.1, 0.13), (1046.5, 0.5, 1.4, 0.12)]
-        case .tick: [(880, 0, 0.12, 0.08)]
+        case .enter: [(880.0, 0, 0.7, 0.13)]                                    // A5 ひとつ
+        case .complete: [(1318.5, 0, 0.7, 0.11), (1760.0, 0.1, 0.9, 0.10)]    // E6 → A6（星がひとつ灯る）
+        case .gust: [(0, 0, 0.45, 0.10)]                                        // 風
+        case .finish: [(1760.0, 0, 1.0, 0.09), (1318.5, 0.14, 1.0, 0.09), (1174.7, 0.28, 1.0, 0.09),
+                       (880.0, 0.42, 1.2, 0.10), (1318.5, 0.62, 1.6, 0.08)]     // 星が降るように下りて、最後に一つ上
+        case .tick: [(1174.7, 0, 0.18, 0.07)]
         }
     }
 
@@ -74,11 +76,26 @@ final class Chimes {
         for i in 0..<Int(frames) { ch[i] = 0 }
         for (f, start, len, amp) in notes {
             let s0 = Int(start * sr), n = Int(len * sr)
+            if f == 0 {
+                // 風：ノイズを 2 回ならして（低い音だけ残す）、ふくらんでしぼむ形に
+                var seed: UInt32 = 12345
+                var lp1: Double = 0, lp2: Double = 0
+                for i in 0..<n where s0 + i < Int(frames) {
+                    seed = seed &* 1_664_525 &+ 1_013_904_223
+                    let white = Double(seed >> 9) / Double(1 << 23) * 2 - 1
+                    lp1 += (white - lp1) * 0.06
+                    lp2 += (lp1 - lp2) * 0.06
+                    let t = Double(i) / Double(n)
+                    let env = sin(.pi * t) * sin(.pi * t)
+                    ch[s0 + i] += Float(lp2 * env * 6) * amp
+                }
+                continue
+            }
             for i in 0..<n where s0 + i < Int(frames) {
                 let t = Double(i) / sr
-                // やわらかい立ち上がりと、長い減衰（ベルのような音）
-                let env = min(1, t / 0.012) * exp(-t * 4.2 / len)
-                let v = sin(2 * .pi * f * t) + 0.25 * sin(2 * .pi * f * 2 * t)
+                // オルゴール：速い立ち上がり、長い減衰、高い倍音（少しずれた倍音で金属の小さな櫛の音）
+                let env = min(1, t / 0.004) * exp(-t * 5.0 / len)
+                let v = sin(2 * .pi * f * t) + 0.3 * sin(2 * .pi * f * 3.01 * t) * exp(-t * 9) + 0.12 * sin(2 * .pi * f * 5.4 * t) * exp(-t * 18)
                 ch[s0 + i] += Float(v * env) * amp
             }
         }

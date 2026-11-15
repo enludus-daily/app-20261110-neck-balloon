@@ -11,6 +11,8 @@ struct OnboardingView: View {
     @State private var demoRun = 0
 
     private let cycle = 3.0
+    /// ページごとに空が移る：朝焼け → 昼の青 → 夕暮れ
+    private var sky: SkyTime { [SkyTime.dawn, .noon, .dusk][min(page, 2)] }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -18,8 +20,9 @@ struct OnboardingView: View {
                 Spacer()
                 if page < 2 {
                     Button("スキップ") { finish() }
-                        .font(Theme.text(14))
-                        .foregroundStyle(Theme.inkSoft)
+                        .font(Theme.text(15, .bold))
+                        .foregroundStyle(.white)
+                        .onSkyText(sky)
                 }
             }
             .frame(height: 44)
@@ -28,8 +31,8 @@ struct OnboardingView: View {
             TimelineView(.animation(paused: reduceMotion || !demoRunning)) { _ in
                 demo(p: reduceMotion || !demoRunning ? 0.78 : (CACurrentMediaTime().truncatingRemainder(dividingBy: cycle)) / cycle)
             }
-            .frame(maxWidth: 360, maxHeight: 320)
-            .padding(.horizontal, 28)
+            .frame(maxWidth: 380, maxHeight: 330)
+            .padding(.horizontal, 20)
             .contentShape(Rectangle())
             .onTapGesture { demoRun += 1 }
             .task(id: "\(page)-\(demoRun)") {
@@ -38,20 +41,22 @@ struct OnboardingView: View {
                 demoRunning = false
             }
 
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 10) {
                 pageText
                 if page == 2 { inputPicker.padding(.top, 6) }
             }
+            .padding(20)
             .frame(maxWidth: 520, alignment: .leading)
-            .padding(.horizontal, 24)
-            .padding(.top, 20)
+            .background(PaperBack(seed: Double(page) + 40, radius: Theme.rLarge))
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
             .id(page)
             .transition(.opacity)
 
             Spacer(minLength: 12)
             HStack(spacing: 8) {
                 ForEach(0..<3, id: \.self) { i in
-                    Capsule().fill(i == page ? Theme.skyDeep : Theme.line).frame(width: i == page ? 22 : 8, height: 8)
+                    Capsule().fill(i == page ? Theme.gold : .white.opacity(0.45)).frame(width: i == page ? 24 : 8, height: 8)
                 }
             }
             .padding(.bottom, 16)
@@ -72,25 +77,27 @@ struct OnboardingView: View {
             .padding(.horizontal, 24)
             .padding(.bottom, 24)
         }
-        .background(Theme.sky(.dawn).ignoresSafeArea())
+        .background(SkyBackdrop(sky: sky, drift: Double(page) * 0.3).id(sky).transition(.opacity))
+        .animation(.easeOut(duration: 0.5), value: page)
+        .environment(\.skyTime, sky)
     }
 
     @ViewBuilder
     private var pageText: some View {
         switch page {
         case 0:
-            Caption("Neck Balloon", color: Theme.skyDeep)
-            Text("首で、風船を運ぶ。").font(Theme.serif(32, .medium)).kerning(-0.5).foregroundStyle(Theme.ink)
+            Caption("Neck Balloon")
+            Text("首で、風船を運ぶ。").font(Theme.display(30, .heavy)).foregroundStyle(Theme.ink)
             Text("iPhone を机に立てて、首をゆっくり倒す・うなずく・横を向く。その動きで、風船が雲の輪へ流れていきます。")
                 .font(Theme.text(15)).foregroundStyle(Theme.ink.opacity(0.8)).fixedSize(horizontal: false, vertical: true)
         case 1:
-            Caption("Slow & wide", color: Theme.skyDeep)
-            Text("ゆっくり、大きく、保つ。").font(Theme.serif(32, .medium)).kerning(-0.5).foregroundStyle(Theme.ink)
+            Caption("ゆっくり大きく")
+            Text("ゆっくり、大きく、保つ。").font(Theme.display(30, .heavy)).foregroundStyle(Theme.ink)
             Text("速く動かすと風が乱れて点が減ります。輪の中で 3 秒保つと、輪が満ちます。痛いときは、すぐにやめてください。")
                 .font(Theme.text(15)).foregroundStyle(Theme.ink.opacity(0.8)).fixedSize(horizontal: false, vertical: true)
         default:
-            Caption("Privacy", color: Theme.skyDeep)
-            Text("カメラは、向きを読むだけ。").font(Theme.serif(30, .medium)).kerning(-0.5).foregroundStyle(Theme.ink)
+            Caption("プライバシー")
+            Text("カメラは、向きを読むだけ。").font(Theme.display(28, .heavy)).foregroundStyle(Theme.ink)
             Text("顔の向きは iPhone の中だけで計算し、映像は保存も送信もしません。カメラを使わず、傾けたり指でなぞったりしても遊べます。")
                 .font(Theme.text(15)).foregroundStyle(Theme.ink.opacity(0.8)).fixedSize(horizontal: false, vertical: true)
         }
@@ -107,12 +114,12 @@ struct OnboardingView: View {
                 } label: {
                     VStack(spacing: 4) {
                         Image(systemName: mode.symbol).font(.system(size: 16, weight: .regular))
-                        Text(mode.label).font(Theme.text(12, .medium))
+                        Text(mode.label).font(Theme.text(12, .bold))
                     }
                     .frame(maxWidth: .infinity, minHeight: 58)
-                    .foregroundStyle(on ? Theme.skyDeep : Theme.inkSoft)
-                    .background(RoundedRectangle(cornerRadius: Theme.rSmall, style: .continuous).fill(on ? Theme.skySoft : .white.opacity(0.5)))
-                    .overlay(RoundedRectangle(cornerRadius: Theme.rSmall, style: .continuous).stroke(on ? Theme.sky : Theme.line, lineWidth: 1))
+                    .foregroundStyle(on ? .white : Theme.inkSoft)
+                    .background(RoundedRectangle(cornerRadius: Theme.rSmall, style: .continuous).fill(on ? Theme.balloonDeep : Theme.line.opacity(0.5)))
+                    .overlay(RoundedRectangle(cornerRadius: Theme.rSmall, style: .continuous).stroke(on ? Theme.balloonLine.opacity(0.5) : Theme.paperEdge, lineWidth: 1))
                 }
                 .buttonStyle(.plain)
                 .accessibilityAddTraits(on ? .isSelected : [])
@@ -133,7 +140,6 @@ struct OnboardingView: View {
             let fill = max(0, min(1, (p - 0.45) / 0.45))
             let ringX = w * 0.74, cx = w * 0.32
             ZStack {
-                SkyBackdrop(sky: page == 1 ? .noon : .dawn)
                 CloudRing(fill: fill)
                     .frame(width: h * 0.62)
                     .position(x: ringX, y: h * 0.42)
@@ -142,13 +148,12 @@ struct OnboardingView: View {
                     .position(x: cx + (ringX - cx) * ease, y: h * 0.42 + h * 0.08)
                 if page == 1 {
                     Text("そのまま、3 秒")
-                        .font(Theme.serif(15).italic())
-                        .foregroundStyle(Theme.ink.opacity(0.7))
-                        .position(x: w / 2, y: h * 0.9)
+                        .font(Theme.display(17, .heavy))
+                        .foregroundStyle(.white)
+                        .onSkyText(sky)
+                        .position(x: w / 2, y: h * 0.92)
                 }
             }
-            .clipShape(RoundedRectangle(cornerRadius: Theme.rLarge, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: Theme.rLarge, style: .continuous).stroke(.white.opacity(0.9), lineWidth: 1))
         }
         .aspectRatio(1.15, contentMode: .fit)
     }

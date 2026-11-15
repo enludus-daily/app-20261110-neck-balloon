@@ -91,6 +91,26 @@
         }
       }
     },
+    "Neck Balloon": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neck Balloon"
+          }
+        }
+      }
+    },
+    "Pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro"
+          }
+        }
+      }
+    },
     "Pro にする": {
       "localizations": {
         "en": {
@@ -171,6 +191,16 @@
         }
       }
     },
+    "いまの首の向き": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your head now"
+          }
+        }
+      }
+    },
     "いまは購入できません。通信を確かめて、あとでもう一度開いてください": {
       "localizations": {
         "en": {
@@ -231,12 +261,42 @@
         }
       }
     },
+    "この 1 年": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This year"
+          }
+        }
+      }
+    },
+    "この 4 週": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last 4 weeks"
+          }
+        }
+      }
+    },
     "この 7 日": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Last 7 days"
+          }
+        }
+      }
+    },
+    "この 7 日の範囲": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Range · last 7 days"
           }
         }
       }
@@ -297,6 +357,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hold for 3 seconds"
+          }
+        }
+      }
+    },
+    "つぎの動き": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up next"
           }
         }
       }
@@ -437,6 +507,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Slowly — the wind is stirring"
+          }
+        }
+      }
+    },
+    "ゆっくり大きく": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slow & wide"
           }
         }
       }
@@ -851,6 +931,16 @@
         }
       }
     },
+    "点": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pts"
+          }
+        }
+      }
+    },
     "無料で 8 コース、Pro で 24 コース。どれも 1 分前後です。": {
       "localizations": {
         "en": {
@@ -997,6 +1087,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Weekly trends with Pro"
+          }
+        }
+      }
+    },
+    "週ごとの範囲（8 週）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly range · 8 weeks"
           }
         }
       }

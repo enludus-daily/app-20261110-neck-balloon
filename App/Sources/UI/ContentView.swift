@@ -40,9 +40,12 @@ struct ContentView: View {
             }
             .environment(app)
             .environment(\.locale, app.forcedLocale ?? systemLocale)
+            .environment(\.skyTime, app.todayCourse.sky)
         }
         .environment(\.locale, app.forcedLocale ?? systemLocale)
-        // 淡い空の世界をそのまま見せるため、明るい見た目に固定する（StudyReel と同じ）
+        // 今日の空（朝焼け・昼の青・夕暮れ・夜と星）で、画面全体の色が変わる。プレイと結果は、そのコースの空
+        .environment(\.skyTime, app.todayCourse.sky)
+        // 空そのものが明るさを決めるので、システムの見た目は明るいほうに固定する（紙の上の文字はいつも藍のインク）
         .preferredColorScheme(.light)
     }
 }

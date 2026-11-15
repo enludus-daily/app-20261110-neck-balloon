@@ -5,6 +5,7 @@ struct SettingsView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
+    @Environment(\.skyTime) private var sky
     @State private var reminderOn = false
     @State private var reminderHour = 15
     @State private var workOn = false
@@ -26,14 +27,16 @@ struct SettingsView: View {
                         ForEach(Leniency.allCases, id: \.self) { l in Text(verbatim: l.name.text(locale)).tag(l) }
                     } label: { Text("判定のゆるさ") }
                     Toggle(isOn: $app.progress.settings.mirror) { Text("左右を入れ替える（カメラ）") }
-                } header: { Text("遊び方") } footer: {
-                    Text("はじめは「小さめ」「ゆるめ」がおすすめです。「ゆるめ」は輪が広く、3 秒保てば満ちます（「ふつう」は 4 秒）。痛いとき・しびれがあるときは、すぐにやめてください。")
+                } header: { SettingsHeader("遊び方") } footer: {
+                    SettingsFooter("はじめは「小さめ」「ゆるめ」がおすすめです。「ゆるめ」は輪が広く、3 秒保てば満ちます（「ふつう」は 4 秒）。痛いとき・しびれがあるときは、すぐにやめてください。")
                 }
+                .listRowBackground(Theme.palette(sky).paper)
 
                 Section {
                     Toggle(isOn: $app.progress.settings.sound) { Text("音") }
                     Toggle(isOn: $app.progress.settings.haptics) { Text("振動") }
-                } header: { Text("音と振動") }
+                } header: { SettingsHeader("音と振動") }
+                .listRowBackground(Theme.palette(sky).paper)
 
                 Section {
                     Toggle(isOn: $reminderOn) { Text("毎日のお知らせ") }
@@ -51,9 +54,10 @@ struct SettingsView: View {
                     .disabled(!app.isPro)
                     if app.reminderDenied {
                         Text("通知が許可されていません。設定アプリの「通知」から許可できます。")
-                            .font(.footnote).foregroundStyle(Theme.peachDeep)
+                            .font(.footnote).foregroundStyle(Theme.balloonDeep)
                     }
-                } header: { Text("お知らせ") }
+                } header: { SettingsHeader("お知らせ") }
+                .listRowBackground(Theme.palette(sky).paper)
 
                 Section {
                     if app.isPro {
@@ -62,7 +66,8 @@ struct SettingsView: View {
                         Button { app.sheet = .pro } label: { Text("Pro を見る") }
                     }
                     Button { Task { await app.store.restore() } } label: { Text("購入を復元") }
-                } header: { Text("Pro") }
+                } header: { SettingsHeader("Pro") }
+                .listRowBackground(Theme.palette(sky).paper)
 
                 Section {
                     Button { dismiss(); app.progress.hasOnboarded = false } label: { Text("使い方をもう一度見る") }
@@ -73,14 +78,14 @@ struct SettingsView: View {
                     }
                     Text("このアプリは医療機器ではありません。症状の改善を約束するものではありません。")
                         .font(.footnote).foregroundStyle(.secondary)
-                } header: { Text("このアプリについて") }
+                } header: { SettingsHeader("このアプリについて") }
+                .listRowBackground(Theme.palette(sky).paper)
             }
             .scrollContentBackground(.hidden)
-            .background(Theme.ground.ignoresSafeArea())
-            .tint(Theme.skyDeep)
-            .navigationTitle(Text("設定"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("閉じる") { dismiss() } } }
+            .background(SkyBackdrop(sky: sky, drift: 0.2))
+            .tint(Theme.balloonDeep)
+            .fontDesign(.rounded)
+            .skySheetChrome(title: "設定", sky: sky) { dismiss() }
             .onAppear {
                 reminderOn = app.progress.settings.dailyReminderHour != nil
                 reminderHour = app.progress.settings.dailyReminderHour ?? 15
@@ -91,5 +96,26 @@ struct SettingsView: View {
             .onChange(of: workOn) { _, on in Task { await app.setWorkReminder(on ? WorkReminder() : nil) } }
             .onChange(of: app.progress.settings) { _, _ in app.applyFeel() }
         }
+    }
+}
+
+/// 設定の見出し（空の上に白い丸い字）
+private struct SettingsHeader: View {
+    @Environment(\.skyTime) private var sky
+    let key: LocalizedStringKey
+    init(_ key: LocalizedStringKey) { self.key = key }
+
+    var body: some View {
+        Text(key).font(Theme.text(13, .heavy)).foregroundStyle(.white).textCase(nil).onSkyText(sky)
+    }
+}
+
+private struct SettingsFooter: View {
+    @Environment(\.skyTime) private var sky
+    let key: LocalizedStringKey
+    init(_ key: LocalizedStringKey) { self.key = key }
+
+    var body: some View {
+        Text(key).font(Theme.text(12, .medium)).foregroundStyle(.white.opacity(0.88)).onSkyText(sky)
     }
 }
